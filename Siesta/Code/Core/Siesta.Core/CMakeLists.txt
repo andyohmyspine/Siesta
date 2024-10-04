@@ -1,0 +1,1 @@
+Siesta_CreateSharedModule(Siesta.Core)

@@ -1,0 +1,43 @@
+
+#ifndef SIESTACORE_H
+#define SIESTACORE_H
+
+#ifdef SIESTACORE_STATIC_DEFINE
+#  define SIESTACORE
+#  define SIESTACORE_NO_EXPORT
+#else
+#  ifndef SIESTACORE
+#    ifdef SiestaCore_EXPORTS
+        /* We are building this library */
+#      define SIESTACORE __declspec(dllexport)
+#    else
+        /* We are using this library */
+#      define SIESTACORE __declspec(dllimport)
+#    endif
+#  endif
+
+#  ifndef SIESTACORE_NO_EXPORT
+#    define SIESTACORE_NO_EXPORT 
+#  endif
+#endif
+
+#ifndef SIESTACORE_DEPRECATED
+#  define SIESTACORE_DEPRECATED __declspec(deprecated)
+#endif
+
+#ifndef SIESTACORE_DEPRECATED_EXPORT
+#  define SIESTACORE_DEPRECATED_EXPORT SIESTACORE SIESTACORE_DEPRECATED
+#endif
+
+#ifndef SIESTACORE_DEPRECATED_NO_EXPORT
+#  define SIESTACORE_DEPRECATED_NO_EXPORT SIESTACORE_NO_EXPORT SIESTACORE_DEPRECATED
+#endif
+
+/* NOLINTNEXTLINE(readability-avoid-unconditional-preprocessor-if) */
+#if 0 /* DEFINE_NO_DEPRECATED */
+#  ifndef SIESTACORE_NO_DEPRECATED
+#    define SIESTACORE_NO_DEPRECATED
+#  endif
+#endif
+
+#endif /* SIESTACORE_H */

@@ -2,15 +2,14 @@
 
 #include "Siesta.EngineAPI.h"
 
-namespace SE
-{
-	class SIESTA_ENGINE_API TEngine
-	{
-	public:
-		TEngine();
-		virtual ~TEngine();
-	};
 
-	SIESTA_ENGINE_API TEngine* CreateEngine();
-}
+class SIESTA_ENGINE_API SEngine
+{
+public:
+	SEngine();
+	virtual ~SEngine();
+};
+
+SIESTA_ENGINE_API SEngine* CreateEngine();
+
 

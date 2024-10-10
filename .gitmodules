@@ -1,0 +1,6 @@
+[submodule "Siesta/Code/ThirdParty/Platform/glfw"]
+	path = Siesta/Code/ThirdParty/Platform/glfw
+	url = https://github.com/glfw/glfw
+[submodule "Siesta/Code/ThirdParty/Core/taskflow"]
+	path = Siesta/Code/ThirdParty/Core/taskflow
+	url = https://github.com/taskflow/taskflow

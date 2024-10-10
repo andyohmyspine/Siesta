@@ -7,7 +7,3 @@ option(SIESTA_BUILD_EDITOR "Whether to build the editor" ON)
 include(Siesta/CMake/Siesta.cmake)
 
 add_subdirectory(Siesta)
-
-if(SIESTA_BUILD_EXAMPLES)
-    add_subdirectory(Examples)
-endif()

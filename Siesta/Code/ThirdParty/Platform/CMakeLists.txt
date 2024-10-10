@@ -1,0 +1,6 @@
+if(WIN32 OR UNIX)
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "")
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL "")
+    add_subdirectory(glfw)
+endif()

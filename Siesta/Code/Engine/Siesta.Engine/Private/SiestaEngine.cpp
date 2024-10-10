@@ -1,20 +1,16 @@
 #include "SiestaEngine.h"
 
-namespace SE
+SIESTA_ENGINE_API SEngine* CreateEngine()
 {
-	SIESTA_ENGINE_API TEngine* CreateEngine()
-	{
-		return new TEngine;
-	}
+	return new SEngine;
+}
 
-	TEngine::TEngine()
-	{
+SEngine::SEngine()
+{
 
-	}
+}
 
-	TEngine::~TEngine()
-	{
-
-	}
+SEngine::~SEngine()
+{
 
 }

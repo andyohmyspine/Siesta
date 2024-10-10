@@ -1,3 +1,4 @@
+add_subdirectory(ThirdParty)
 add_subdirectory(Core)
 add_subdirectory(Engine)
 

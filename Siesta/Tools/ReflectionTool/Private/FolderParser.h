@@ -4,11 +4,19 @@
 #include "Type.h"
 #include "SiestaFilesystem.h"
 
+struct DParsedFieldInfo
+{
+	TString Name;
+	TString Type;
+	TString MemberOf;
+};
+
 struct DParsedTypeInfo
 {
 	TString Name;
 	TString API;
 	TString Parent;
+	PVector<DParsedFieldInfo> Fields;
 };
 
 struct DParsedFolderData
@@ -47,6 +55,71 @@ struct DProtectedList
 	inline auto end() const { return Data.end(); }
 };
 
+enum class ETokenType
+{
+	None,
+	ExposedClass,
+	ExposedField,
+	
+	LeftParen,
+	RightParen,
+	LeftBrace,
+	RightBrace,
+	LeftAngular,
+	RightAngular,
+	LeftBracket,
+	RightBracket,
+	Comma,
+	Period,
+	Colon,
+	Equal,
+	Star,
+	Ampersand,
+	Semicolon,
+
+	ClassKeyword,
+	StructKeyword,
+	PublicKeyword,
+	PrivateKeyword,
+	ProtectedKeyword,
+	FriendKeyword,
+	Identifier,
+	GeneratedBody,
+};
+
+struct DFileWord
+{
+	TString Word;
+	int32 LineIndex;
+};
+
+struct DToken
+{
+	DToken() = default;
+	DToken(ETokenType InType, const TString& InFile, const DFileWord& Word)
+		: Type(InType)
+		, Name(Word.Word)
+		, File(InFile)
+		, Line(Word.LineIndex)
+	{
+	}
+
+	ETokenType Type {};
+	TString Name {};
+	TString File {};
+	int32 Line {};
+
+	void Reset()
+	{
+		Type = {};
+		Name = {};
+		File = {};
+		Line = {};
+	}
+
+	bool Valid() const { return Type != ETokenType::None; }
+};
+
 class TFolderParser
 {
 public:
@@ -55,7 +128,9 @@ public:
 	DParsedFolderData GenerateFolderInfo();
 
 private:
-	void ReadFileTypes(const TString& FileContents);
+	PVector<DFileWord> SplitFileIntoWords(const TString& FileContents);
+	PVector<DToken> TokenizeFile(const TString& FileName, const PVector<DFileWord>& Words);
+	DParsedFolderData ParseTokens(const PVector<DToken>& Tokens);
 
 private:
 	TPath m_FolderPath;

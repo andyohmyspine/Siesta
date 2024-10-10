@@ -83,3 +83,4 @@ using PFuture = std::future<T>;
 using TMutex = std::mutex;
 using TLockGuard = std::lock_guard<TMutex>;
 
+#define SIESTA_STRINGIFY(x) #x

@@ -2,10 +2,11 @@
 
 SIESTA_ENGINE_API SEngine* CreateEngine()
 {
-	return new SEngine;
+	return new SEngine({});
 }
 
-SEngine::SEngine()
+SEngine::SEngine(const SObjectInfo& Info)
+	: SObject(Info)
 {
 
 }

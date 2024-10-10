@@ -19,17 +19,18 @@ private:
 /**
  * Base class of any reflectable object.
  */
-class SIESTA_OBJECT_API SObject
+expose_class class SIESTA_OBJECT_API SObject
 {
-	expose_class();
+	expose_code();
 
 public:
 	virtual ~SObject() = default;
 
+	inline SType* GetType() const { return m_Type; }
+	inline SObject* GetParent() const { return m_Parent; }
+
 protected:
 	SObject(const SObjectInfo& Info);
-
-	inline SType* GetType() const { return m_Type; }
 
 private:
 	SType* m_Type = nullptr;

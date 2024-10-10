@@ -7,6 +7,8 @@
 #include <sstream>
 #include <future>
 #include <format>
+#include <chrono>
+
 #include "ReflectionGenerator.h"
 
 inline static PVector<TString> SplitFilePaths(const TString& String)
@@ -27,6 +29,12 @@ inline static PVector<TString> SplitFilePaths(const TString& String)
 
 int32 main(int32 ArgCount, char* const* ArgValues)
 {
+	std::cout << std::format(" ----------------------------------------------------------\n");
+	std::cout << std::format(" -- Starting reflection generation for Siesta workspace. --\n");
+	std::cout << std::format(" ----------------------------------------------------------\n");
+
+	const auto BeginTimePoint = std::chrono::high_resolution_clock::now();
+
 	PVector<TString> ProjectPaths = SplitFilePaths(SIESTA_REFLECTION_FOLDERS);
 
 	TAsyncExecutor Executor{};
@@ -44,7 +52,7 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 			auto ReadFolderTask = Graph.emplace(
 				[CopiedPath = ProjectPath, &ParsedFolderDatas]
 				{
-					std::cout << std::format("Generating folder info for folder: {}\n", CopiedPath);
+					std::cout << std::format(" - Generating folder info for folder: {}\n", CopiedPath);
 					TFolderParser Parser(CopiedPath);
 					ParsedFolderDatas.PushBack((Parser.GenerateFolderInfo()));
 				});
@@ -53,7 +61,7 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 			auto GenerateReflectionTask = Graph.emplace(
 				[&ParsedFolderDatas, ProjectPath, &GeneratedReflectionDatas]
 				{
-					std::cout << std::format("Generating reflection info for folder: {}\n", ProjectPath);
+					std::cout << std::format(" - Generating reflection info for folder: {}\n", ProjectPath);
 
 					TReflectionGenerator Generator(*ParsedFolderDatas.FindByPredicate([&ProjectPath](const auto& Value) { return Value.FolderPath == ProjectPath; }));
 					PVector<DTypeReflectionData> ReflectionData = Generator.GenerateReflection();
@@ -69,6 +77,12 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 
 	Executor.run(Graph);
 	Executor.wait_for_all();
+
+	const auto EndTimePoint = std::chrono::high_resolution_clock::now();
+	const auto TimeDifference = EndTimePoint - BeginTimePoint;
+	const auto Milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(TimeDifference);
+
+	std::cout << std::format(" - Reflection generation took {} seconds\n", (double)Milliseconds.count() * 0.001);
 
 	return 0;
 }

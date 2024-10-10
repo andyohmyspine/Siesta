@@ -4,11 +4,18 @@
 #include "Type.h"
 #include "SiestaFilesystem.h"
 
+struct DParsedTypeInfo
+{
+	TString Name;
+	TString API;
+	TString Parent;
+};
+
 struct DParsedFolderData
 {
-	bool ContainsReflection;
-	TString FolderPath;
-	PVector<PSharedPtr<SType>> Types;
+	bool ContainsReflection{};
+	TString FolderPath{};
+	PVector<DParsedTypeInfo> Types{};
 };
 
 template<typename T>
@@ -29,7 +36,7 @@ struct DProtectedList
 		Data.push_back(Value);
 	}
 
-	template<typename Func> 
+	template<typename Func>
 	auto FindByPredicate(Func&& Predicate) const
 	{
 		TLockGuard Lock(DataMutex);
@@ -48,5 +55,9 @@ public:
 	DParsedFolderData GenerateFolderInfo();
 
 private:
+	void ReadFileTypes(const TString& FileContents);
+
+private:
 	TPath m_FolderPath;
+	DParsedFolderData m_OutData{};
 };

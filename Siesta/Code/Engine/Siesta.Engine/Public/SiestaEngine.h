@@ -14,6 +14,12 @@ public:
 
 	expose_field(interesting)
 	float Lols = {};
+
+	expose_field(parent, base, lol, coco)
+	SObject* OtherObject = nullptr;
+
+	expose_method(somespecifier)
+	PVector<TString> GetStrings(const SObject* OtherObject = nullptr) const;
 };
 
 SIESTA_ENGINE_API SEngine* CreateEngine();

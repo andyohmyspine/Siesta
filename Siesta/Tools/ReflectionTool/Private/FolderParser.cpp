@@ -178,6 +178,7 @@ PVector<DToken> TFolderParser::TokenizeFile(const TString& FileName, const PVect
 		{ "private", ETokenType::PrivateKeyword },
 		{ "protected", ETokenType::ProtectedKeyword },
 		{ "friend", ETokenType::FriendKeyword },
+		{ "const", ETokenType::ConstKeyword },
 
 	};
 
@@ -222,6 +223,152 @@ PVector<DToken> TFolderParser::TokenizeFile(const TString& FileName, const PVect
 	}
 
 	return OutTokens;
+}
+
+struct DTypeInfo
+{
+	TString Type = {};
+	PVector<TString> TypeParams = {};
+	uint16 DecoratorMask = {};
+};
+
+static DTypeInfo ParseTypeInfo(PVector<DToken>::const_iterator& Iter, PVector<DToken>::const_iterator EndIter)
+{
+	auto _is_end = [&] { return Iter == EndIter; };
+	auto _advance = [&] { ++Iter; return !_is_end(); };
+	auto _advance_safe = [&]<typename... Args>(fmt::format_string<Args...> Format = "Unexpected end of file", Args&&... InArgs)
+	{
+		if (!_advance())
+			Debug::Critical(Format, std::forward<Args>(InArgs)...);
+	};
+
+	DTypeInfo TypeInfo;
+
+	if (Iter->Type == ETokenType::ConstKeyword)
+	{
+		TypeInfo.DecoratorMask |= TD_Const;
+		_advance_safe();
+	}
+
+	if (Iter->Type == ETokenType::Identifier)
+	{
+		// This is the type, but it may be parameterized, so put it temporarily in the field info and parse type paras.
+		TypeInfo.Type = Iter->Name;
+		_advance_safe();
+
+		// Check if it's pointer or reference.
+		if (Iter->Type == ETokenType::Ampersand)
+		{
+			TypeInfo.DecoratorMask |= TD_Reference;
+			_advance_safe();
+		}
+
+		if (Iter->Type == ETokenType::Star)
+		{
+			TypeInfo.DecoratorMask |= TD_Pointer;
+			_advance_safe();
+		}
+
+		if (Iter->Type == ETokenType::LeftAngular)
+		{
+			// Start parsing type parameters then field name
+			_advance_safe();
+			while (Iter->Type != ETokenType::RightAngular)
+			{
+				if (Iter->Type == ETokenType::Identifier)
+				{
+					TypeInfo.TypeParams.push_back(Iter->Name);
+					_advance_safe();
+				}
+				else if (Iter->Type == ETokenType::Comma)
+				{
+					// Found comma
+					_advance_safe();
+				}
+				else
+				{
+					Debug::Critical("Unexpected token '{}' [{} : {}] when parsing field type parameters. Note that nested parameterized types are unsupported.", Iter->Name, Iter->File, Iter->Line);
+				}
+			}
+		}
+	}
+
+	return TypeInfo;
+}
+
+static DParsedVariableInfo ParseVariableInfo(PVector<DToken>::const_iterator& Iter, PVector<DToken>::const_iterator EndIter)
+{
+	auto _is_end = [&] { return Iter == EndIter; };
+	auto _advance = [&] { ++Iter; return !_is_end(); };
+	auto _advance_safe = [&]<typename... Args>(fmt::format_string<Args...> Format = "Unexpected end of file", Args&&... InArgs)
+	{
+		if (!_advance())
+			Debug::Critical(Format, std::forward<Args>(InArgs)...);
+	};
+
+	DParsedVariableInfo FieldInfo = {};
+
+	DTypeInfo Type = ParseTypeInfo(Iter, EndIter);
+	FieldInfo.Type = Type.Type;
+	FieldInfo.DecoratorMask = Type.DecoratorMask;
+	FieldInfo.TypeParams = Type.TypeParams;
+
+	if (Iter->Type == ETokenType::Identifier)
+	{
+		FieldInfo.Name = Iter->Name;
+		_advance_safe();
+
+		// Parse the default value
+		if (Iter->Type == ETokenType::Equal)
+		{
+			_advance_safe();
+
+			TStringStream DefaultValueStream;
+			while ((Iter->Type != ETokenType::Semicolon) && (Iter->Type != ETokenType::Comma) && (Iter->Type != ETokenType::RightParen))
+			{
+				// We are forgiving here :)
+				DefaultValueStream << Iter->Name;
+				_advance_safe();
+			}
+
+			FieldInfo.DefaultValue = DefaultValueStream.str();
+		}
+	}
+
+	return FieldInfo;
+}
+
+static PVector<TString> ParseMetadataSpecifiers(PVector<DToken>::const_iterator& Iter, PVector<DToken>::const_iterator EndIter)
+{
+	PVector<TString> Out;
+
+	auto _is_end = [&] { return Iter == EndIter; };
+	auto _advance = [&] { ++Iter; return !_is_end(); };
+	auto _advance_safe = [&]<typename... Args>(fmt::format_string<Args...> Format = "Unexpected end of file", Args&&... InArgs)
+	{
+		if (!_advance())
+			Debug::Critical(Format, std::forward<Args>(InArgs)...);
+	};
+
+	if (Iter->Type == ETokenType::LeftParen)
+	{
+		_advance_safe("Unexpected end of file while parsing variable metadata.");
+
+		while (Iter->Type != ETokenType::RightParen)
+		{
+			if (Iter->Type == ETokenType::Identifier)
+			{
+				Out.push_back(Iter->Name);
+				_advance_safe("Unexpected end of file while parsing field metadata.");
+			}
+			else if (Iter->Type == ETokenType::Comma)
+			{
+				_advance_safe("Unexpected end of file while parsing field metadata.");
+			}
+		}
+	}
+
+	return Out;
 }
 
 DParsedFolderData TFolderParser::ParseTokens(const PVector<DToken>& Tokens)
@@ -348,7 +495,7 @@ DParsedFolderData TFolderParser::ParseTokens(const PVector<DToken>& Tokens)
 
 					_advance_safe();
 				}
-				
+
 			}
 #pragma endregion
 
@@ -386,118 +533,86 @@ DParsedFolderData TFolderParser::ParseTokens(const PVector<DToken>& Tokens)
 					{
 						if (BraceDepth == CLASS_SCOPE_BRACE_DEPTH)
 						{
+							// Parse exposed field
 							if (Iter->Type == ETokenType::ExposedField)
 							{
-								DParsedVariableInfo FieldInfo = {};
+								DParsedVariableInfo FieldInfo{};
+
+								// Metadata
+								_advance_safe("Unexpected end of file while parsing variable metadata.");
+								FieldInfo.MetaSpecifiers = ParseMetadataSpecifiers(Iter, Tokens.end());
+
+								// Type, name and default value
+								_advance_safe();
+								DParsedVariableInfo ParsedFieldInfo = ParseVariableInfo(Iter, Tokens.end());;
+
 								FieldInfo.MemberOf = TypeInfo.Name;
+								FieldInfo.DecoratorMask = ParsedFieldInfo.DecoratorMask;
+								FieldInfo.Name = ParsedFieldInfo.Name;
+								FieldInfo.Type = ParsedFieldInfo.Type;
+								FieldInfo.TypeParams = ParsedFieldInfo.TypeParams;
 
-								// Start parcing the field
-								_advance_safe("Unexpected end of file while parsing field metadata.");
-								if (Iter->Type == ETokenType::LeftParen)
+								if (Iter->Type == ETokenType::Semicolon)
 								{
-									if (!_advance())
-									{
-										_advance_safe("Unexpected end of file while parsing field metadata.");
-									}
-
-									while (Iter->Type != ETokenType::RightParen)
-									{
-										if (Iter->Type == ETokenType::Identifier)
-										{
-											FieldInfo.MetaSpecifiers.push_back(Iter->Name);
-											_advance_safe("Unexpected end of file while parsing field metadata.");
-										}
-										else if (Iter->Type == ETokenType::Comma)
-										{
-											_advance_safe("Unexpected end of file while parsing field metadata.");
-										}
-									}
-
-									// Parse field type and name
-									_advance_safe();
-									if (Iter->Type == ETokenType::Identifier)
-									{	
-										// This is the type, but it may be parameterized, so put it temporarily in the field info and parse type paras.
-										FieldInfo.Type = Iter->Name;
-										_advance_safe();
-
-										// Try parsing type field name
-										if (Iter->Type == ETokenType::Identifier)
-										{
-											FieldInfo.Name = Iter->Name;
-											_advance_safe();
-										}
-										else if (Iter->Type == ETokenType::LeftAngular)
-										{
-											// Start parsing type parameters then field name
-											_advance_safe();
-											while (Iter->Type != ETokenType::RightAngular)
-											{
-												if (Iter->Type == ETokenType::Identifier)
-												{
-													FieldInfo.TypeParams.push_back(Iter->Name);
-													_advance_safe();
-												}
-												else if (Iter->Type == ETokenType::Comma)
-												{
-													// Found comma
-													_advance_safe();
-												}
-												else
-												{
-													Debug::Critical("Unexpected token '{}' [{} : {}] when parsing field type parameters. Note that nested parameterized types are unsupported.", Iter->Name, Iter->File, Iter->Line);
-												}
-											}
-
-											// Finished parsing type params, now parse the name
-											_advance_safe();
-
-											if (Iter->Type == ETokenType::Identifier)
-											{
-												FieldInfo.Name = Iter->Name;
-												_advance_safe();
-											}
-											else
-											{
-												Debug::Critical("Unexpected token {}.", Iter->Name);
-											}
-										}
-										else
-										{
-											Debug::Critical("Identifier not found.");
-										}
-
-										if (Iter->Type != ETokenType::Semicolon)
-										{
-											// Parse the default value
-											if (Iter->Type == ETokenType::Equal)
-											{
-												_advance_safe();
-
-												TStringStream DefaultValueStream;
-												while (Iter->Type != ETokenType::Semicolon)
-												{
-													// We are forgiving here :)
-													DefaultValueStream << Iter->Name;
-													_advance_safe();
-												}
-
-												FieldInfo.DefaultValue = DefaultValueStream.str();
-											}
-										}
-										
-										if (Iter->Type == ETokenType::Semicolon)
-										{
-											TypeInfo.Fields.push_back(std::move(FieldInfo));
-										}
-									}
+									TypeInfo.Fields.push_back(std::move(FieldInfo));
 								}
 							} // EXPOSE FIELD END
 
+
 							if (Iter->Type == ETokenType::ExposeMethod)
 							{
-								
-							}
+								DParsedMethodInfo MethodInfo = {};
+								MethodInfo.MemberOf = TypeInfo.Name;
+
+								_advance_safe("Unexpected end of file while parsing method metadata.");
+								MethodInfo.MetaSpecifiers = ParseMetadataSpecifiers(Iter, Tokens.end());
+
+								_advance_safe();
+								DTypeInfo ReturnTypeInfo = ParseTypeInfo(Iter, Tokens.end());
+
+								MethodInfo.ReturnType = ReturnTypeInfo.Type;
+								MethodInfo.ReturnDecoratorMask = ReturnTypeInfo.DecoratorMask;
+								MethodInfo.ReturnTypeParams = ReturnTypeInfo.TypeParams;
+
+								_advance_safe();
+
+								// Parse method name
+								if (Iter->Type == ETokenType::Identifier)
+								{
+									MethodInfo.Name = Iter->Name;
+								}
+								else
+								{
+									Debug::Critical("Failed to parse method name.");
+								}
+
+								// Parse function parameters
+								_advance_safe();
+								if (Iter->Type == ETokenType::LeftParen)
+								{
+									// Start parsing parameters
+									_advance_safe();
+									while (Iter->Type != ETokenType::RightParen)
+									{
+										DParsedVariableInfo ParsedParam = ParseVariableInfo(Iter, Tokens.end());
+										MethodInfo.Parameters.push_back(ParsedParam);
+									}
+								}
+								else
+								{
+									Debug::Critical("Expected '(' found '{}'", Iter->Name);
+								}
+
+								// Check if method is const
+								_advance_safe();
+
+								if (Iter->Type == ETokenType::ConstKeyword)
+								{
+									MethodInfo.MethodDecoratorMask |= TD_Const;
+								}
+
+								TypeInfo.Methods.push_back(std::move(MethodInfo));
+							} // EXPOSE METHOD NAME
 						}
 					}
 				}
@@ -516,6 +631,7 @@ DParsedFolderData TFolderParser::ParseTokens(const PVector<DToken>& Tokens)
 	ending:
 		continue;
 	}
-
+	
+	OutData.ContainsReflection = OutData.Types.size() > 0;
 	return OutData;
 }

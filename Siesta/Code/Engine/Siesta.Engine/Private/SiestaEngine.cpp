@@ -15,3 +15,8 @@ SEngine::~SEngine()
 {
 
 }
+
+PVector<TString> SEngine::GetStrings(const SObject* OtherObject) const
+{
+	return {};
+}

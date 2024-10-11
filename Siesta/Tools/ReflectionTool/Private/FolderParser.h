@@ -4,10 +4,22 @@
 #include "Type.h"
 #include "SiestaFilesystem.h"
 
+enum ETypeDecorators
+{
+	TD_None = 0,
+	TD_Const = 1 << 0,
+	TD_Reference = 1 << 1,
+	TD_Pointer = 1 << 2,
+
+	TD_ConstReference = TD_Const | TD_Reference,
+	TD_ConstPointer = TD_Const | TD_Pointer,
+};
+
 struct DParsedVariableInfo
 {
 	TString Name;
 	TString Type;
+	uint16 DecoratorMask;
 	PVector<TString> TypeParams;
 	TString DefaultValue;
 	TString MemberOf;
@@ -18,7 +30,10 @@ struct DParsedMethodInfo
 {
 	TString Name;
 	TString ReturnType;
-	PVector<DParsedVariableInfo> TypeParams;
+	uint16 ReturnDecoratorMask;
+	uint16 MethodDecoratorMask;
+	PVector<TString> ReturnTypeParams;
+	PVector<DParsedVariableInfo> Parameters;
 	TString DefaultValue;
 	TString MemberOf;
 	PVector<TString> MetaSpecifiers;
@@ -39,6 +54,7 @@ struct DParsedTypeInfo
 	int32 GeneratedBodyLine;
 	PVector<TString> MetaSpecifiers;
 	PVector<DParsedVariableInfo> Fields;
+	PVector<DParsedMethodInfo> Methods;
 };
 
 struct DParsedFolderData
@@ -83,6 +99,7 @@ enum class ETokenType
 	ExposedObjectType,
 	ExposedField,
 	ExposeMethod,
+	ConstKeyword,
 	
 	LeftParen,
 	RightParen,

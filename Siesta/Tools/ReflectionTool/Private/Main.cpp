@@ -63,11 +63,15 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 				{
 					Debug::Trace(" - Generating reflection info for folder: {}", ProjectPath);
 
-					TReflectionGenerator Generator(*ParsedFolderDatas.FindByPredicate([&ProjectPath](const auto& Value) { return Value.FolderPath == ProjectPath; }));
-					PVector<DTypeReflectionData> ReflectionData = Generator.GenerateReflection();
-					for (DTypeReflectionData& Data : ReflectionData)
+					const DParsedFolderData& FolderData = *ParsedFolderDatas.FindByPredicate([&ProjectPath](const auto& Value) { return Value.FolderPath == ProjectPath; });
+					if (FolderData.ContainsReflection)
 					{
-						GeneratedReflectionDatas.PushBack(Data);
+						TReflectionGenerator Generator(FolderData);
+						PVector<DTypeReflectionData> ReflectionData = Generator.GenerateReflection();
+						for (DTypeReflectionData& Data : ReflectionData)
+						{
+							GeneratedReflectionDatas.PushBack(Data);
+						}
 					}
 				});
 

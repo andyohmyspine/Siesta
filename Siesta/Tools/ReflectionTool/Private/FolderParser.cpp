@@ -409,6 +409,7 @@ DParsedFolderData TFolderParser::ParseTokens(const PVector<DToken>& Tokens)
 			_advance_safe("Unexpected end of file while parsing class metadata.");
 
 			DParsedTypeInfo TypeInfo = {};
+			TypeInfo.File = Iter->File;
 			if (Iter->Type == ETokenType::LeftParen)
 			{
 				if (!_advance())

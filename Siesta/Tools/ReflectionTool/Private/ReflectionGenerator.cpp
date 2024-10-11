@@ -7,5 +7,8 @@ TReflectionGenerator::TReflectionGenerator(const DParsedFolderData& FolderData)
 
 PVector<DTypeReflectionData> TReflectionGenerator::GenerateReflection()
 {
-	return {};
+	for (const DParsedTypeInfo& Type : m_FolderData.Types)
+	{
+		// Generate SType for the class
+	}
 }

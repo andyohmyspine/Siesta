@@ -50,6 +50,7 @@ struct DParsedTypeInfo
 	TString Name;
 	TString API;
 	TString Parent;
+	TString File;
 	EParsedTypeSpecifier TypeSpecifier;
 	int32 GeneratedBodyLine;
 	PVector<TString> MetaSpecifiers;

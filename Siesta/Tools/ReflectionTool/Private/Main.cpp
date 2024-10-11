@@ -29,9 +29,9 @@ inline static PVector<TString> SplitFilePaths(const TString& String)
 
 int32 main(int32 ArgCount, char* const* ArgValues)
 {
-	std::cout << std::format(" ----------------------------------------------------------\n");
-	std::cout << std::format(" -- Starting reflection generation for Siesta workspace. --\n");
-	std::cout << std::format(" ----------------------------------------------------------\n");
+	Debug::Trace(" ----------------------------------------------------------\n");
+	Debug::Trace(" -- Starting reflection generation for Siesta workspace. --\n");
+	Debug::Trace(" ----------------------------------------------------------\n");
 
 	const auto BeginTimePoint = std::chrono::high_resolution_clock::now();
 
@@ -52,7 +52,7 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 			auto ReadFolderTask = Graph.emplace(
 				[CopiedPath = ProjectPath, &ParsedFolderDatas]
 				{
-					std::cout << std::format(" - Generating folder info for folder: {}\n", CopiedPath);
+					Debug::Trace(" - Generating folder info for folder: {}", CopiedPath);
 					TFolderParser Parser(CopiedPath);
 					ParsedFolderDatas.PushBack((Parser.GenerateFolderInfo()));
 				});
@@ -61,7 +61,7 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 			auto GenerateReflectionTask = Graph.emplace(
 				[&ParsedFolderDatas, ProjectPath, &GeneratedReflectionDatas]
 				{
-					std::cout << std::format(" - Generating reflection info for folder: {}\n", ProjectPath);
+					Debug::Trace(" - Generating reflection info for folder: {}", ProjectPath);
 
 					TReflectionGenerator Generator(*ParsedFolderDatas.FindByPredicate([&ProjectPath](const auto& Value) { return Value.FolderPath == ProjectPath; }));
 					PVector<DTypeReflectionData> ReflectionData = Generator.GenerateReflection();
@@ -82,7 +82,7 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 	const auto TimeDifference = EndTimePoint - BeginTimePoint;
 	const auto Milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(TimeDifference);
 
-	std::cout << std::format(" - Reflection generation took {} seconds\n", (double)Milliseconds.count() * 0.001);
+	Debug::Trace(" - Reflection generation took {} seconds\n", (double)Milliseconds.count() * 0.001);
 
 	return 0;
 }

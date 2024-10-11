@@ -4,3 +4,6 @@
 [submodule "Siesta/Code/ThirdParty/Core/taskflow"]
 	path = Siesta/Code/ThirdParty/Core/taskflow
 	url = https://github.com/taskflow/taskflow
+[submodule "Siesta/Code/ThirdParty/Core/spdlog"]
+	path = Siesta/Code/ThirdParty/Core/spdlog
+	url = https://github.com/gabime/spdlog

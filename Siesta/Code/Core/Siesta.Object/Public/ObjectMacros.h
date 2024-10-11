@@ -1,7 +1,8 @@
 #pragma once
 
-#define expose_class
-#define expose_field
+#define expose_object(...)
+#define expose_field(...)
+#define expose_method(...)
 
 // Temporary
-#define expose_code()
+#define generated_code()

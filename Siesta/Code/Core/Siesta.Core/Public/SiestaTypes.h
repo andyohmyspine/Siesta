@@ -27,8 +27,20 @@ using TStringStream = std::stringstream;
 template<typename T>
 using PSharedPtr = std::shared_ptr<T>;
 
+template<typename T, typename ... Args>
+inline PSharedPtr<T> MakeShared(Args&&... InArgs)
+{
+	return std::make_shared<T>(std::forward<Args>(InArgs)...);
+}
+
 template<typename T>
 using PUniquePtr = std::unique_ptr<T>;
+
+template<typename T, typename ... Args>
+inline PUniquePtr<T> MakeUnique(Args&&... InArgs)
+{
+	return std::make_unique<T>(std::forward<Args>(InArgs)...);
+}
 
 template<typename T>
 using PWeakPtr = std::weak_ptr<T>;
@@ -83,4 +95,23 @@ using PFuture = std::future<T>;
 using TMutex = std::mutex;
 using TLockGuard = std::lock_guard<TMutex>;
 
+#include <variant>
+
+template<typename ... Types>
+using PVariant = std::variant<Types...>;
+
+using TMonostate = std::monostate;
+
+#include <stdexcept>
+using TRuntimeError = std::runtime_error;
+
+// Macros
 #define SIESTA_STRINGIFY(x) #x
+
+inline constexpr auto MakeVariantFromValuesHelper(auto... Values)
+{
+	return PVariant<TMonostate, decltype(Values)...>();
+}
+
+#define SIESTA_MAKE_VARIANT_TYPE_FROM_VALUES(Name, ...) using Name = decltype(MakeVariantFromValuesHelper(__VA_ARGS__))
+#define SIESTA_MAKE_TUPLE_TYPE_FROM_VALUES(Name, ...) using Name = decltype(std::make_tuple(__VA_ARGS__))

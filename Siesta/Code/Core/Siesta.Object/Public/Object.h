@@ -19,9 +19,10 @@ private:
 /**
  * Base class of any reflectable object.
  */
-expose_class class SIESTA_OBJECT_API SObject
+expose_object(abstract) 
+class SIESTA_OBJECT_API SObject
 {
-	expose_code();
+	generated_code()
 
 public:
 	virtual ~SObject() = default;

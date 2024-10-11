@@ -4,11 +4,30 @@
 #include "Type.h"
 #include "SiestaFilesystem.h"
 
-struct DParsedFieldInfo
+struct DParsedVariableInfo
 {
 	TString Name;
 	TString Type;
+	PVector<TString> TypeParams;
+	TString DefaultValue;
 	TString MemberOf;
+	PVector<TString> MetaSpecifiers;
+};
+
+struct DParsedMethodInfo
+{
+	TString Name;
+	TString ReturnType;
+	PVector<DParsedVariableInfo> TypeParams;
+	TString DefaultValue;
+	TString MemberOf;
+	PVector<TString> MetaSpecifiers;
+};
+
+enum class EParsedTypeSpecifier
+{
+	Class,
+	Struct,
 };
 
 struct DParsedTypeInfo
@@ -16,7 +35,10 @@ struct DParsedTypeInfo
 	TString Name;
 	TString API;
 	TString Parent;
-	PVector<DParsedFieldInfo> Fields;
+	EParsedTypeSpecifier TypeSpecifier;
+	int32 GeneratedBodyLine;
+	PVector<TString> MetaSpecifiers;
+	PVector<DParsedVariableInfo> Fields;
 };
 
 struct DParsedFolderData
@@ -58,8 +80,9 @@ struct DProtectedList
 enum class ETokenType
 {
 	None,
-	ExposedClass,
+	ExposedObjectType,
 	ExposedField,
+	ExposeMethod,
 	
 	LeftParen,
 	RightParen,
@@ -84,7 +107,7 @@ enum class ETokenType
 	ProtectedKeyword,
 	FriendKeyword,
 	Identifier,
-	GeneratedBody,
+	GeneratedCode,
 };
 
 struct DFileWord

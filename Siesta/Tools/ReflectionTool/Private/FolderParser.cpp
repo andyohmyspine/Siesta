@@ -151,11 +151,12 @@ PVector<DFileWord> TFolderParser::SplitFileIntoWords(const TString& FileContents
 
 PVector<DToken> TFolderParser::TokenizeFile(const TString& FileName, const PVector<DFileWord>& Words)
 {
-	static PHashMap<TString, ETokenType> SpecialSymbolTokens
+	static const PHashMap<TString, ETokenType> SpecialSymbolTokens
 	{
-		{ SIESTA_STRINGIFY(expose_class), ETokenType::ExposedClass },
-		{ SIESTA_STRINGIFY(expose_code), ETokenType::GeneratedBody},
+		{ SIESTA_STRINGIFY(expose_object), ETokenType::ExposedObjectType },
+		{ SIESTA_STRINGIFY(generated_code), ETokenType::GeneratedCode},
 		{ SIESTA_STRINGIFY(expose_field), ETokenType::ExposedField },
+		{ SIESTA_STRINGIFY(expose_method), ETokenType::ExposeMethod },
 		{ "(",ETokenType::LeftParen },
 		{ ")",ETokenType::RightParen },
 		{ ":",ETokenType::Colon },
@@ -223,141 +224,298 @@ PVector<DToken> TFolderParser::TokenizeFile(const TString& FileName, const PVect
 	return OutTokens;
 }
 
-template<ETokenType ... Types>
-struct DTokenPattern
-{
-	static constexpr std::array<ETokenType, sizeof...(Types)> Pattern{
-		Types...
-	};
-
-	template<typename T>
-	inline constexpr bool operator==(const T& Other)
-	{
-		return false;
-	}
-
-	template<>
-	inline constexpr bool operator==<DTokenPattern>(const DTokenPattern& Other)
-	{
-		return true;
-	}
-
-	inline constexpr ETokenType operator[](size_t Index) const { return Pattern[Index]; }
-};
-
-// Main patterns
-static constexpr DTokenPattern <
-	ETokenType::ExposedClass, // expose_class
-	ETokenType::ClassKeyword, // class
-	ETokenType::Identifier,   // class name,
-	ETokenType::LeftBrace,	  // {
-	ETokenType::GeneratedBody // expose_code
-> CLASS_WITHOUT_PARENT_NO_API;
-
-static constexpr DTokenPattern <
-	ETokenType::ExposedClass, // expose_class
-	ETokenType::ClassKeyword, // class
-	ETokenType::Identifier,   // class name,
-	ETokenType::Identifier,   // API_NAME,
-	ETokenType::LeftBrace,	  // {
-	ETokenType::GeneratedBody // expose_code
-> CLASS_WITHOUT_PARENT_WITH_API;
-
-static constexpr DTokenPattern<
-	ETokenType::ExposedClass,
-	ETokenType::ClassKeyword,
-	ETokenType::Identifier,
-	ETokenType::Colon,
-	ETokenType::PublicKeyword,
-	ETokenType::Identifier,
-	ETokenType::LeftBrace,
-	ETokenType::GeneratedBody
-> CLASS_WITH_PARENT_NO_API;
-
-static constexpr DTokenPattern<
-	ETokenType::ExposedClass,
-	ETokenType::ClassKeyword,
-	ETokenType::Identifier,
-	ETokenType::Identifier,
-	ETokenType::Colon,
-	ETokenType::PublicKeyword,
-	ETokenType::Identifier,
-	ETokenType::LeftBrace,
-	ETokenType::GeneratedBody
-> CLASS_WITH_PARENT_WITH_API;
-
-struct DFoundPattern
-{
-	uint64 StartIndex;
-	PVector<DToken> Tokens;
-};
-
-template<ETokenType... PatternTypes>
-PVector<DFoundPattern> FindPattern(DTokenPattern<PatternTypes...> Pattern, const PVector<DToken>& Tokens)
-{
-	if (Tokens.empty())
-	{
-		return {};
-	}
-
-	// Find 0th element to be similar
-	size_t PatternIndex = 0;
-	PVector<DFoundPattern> Output;
-
-	int32 Index = 0;
-	while (Index < Tokens.size())
-	{
-		DFoundPattern CurrentPattern{};
-
-	restart:
-		ETokenType Start = Pattern[PatternIndex];
-		while (Tokens[Index++].Type != Start)
-		{
-			// Could not find anything
-			if (Tokens.size() <= Index)
-				return Output;
-		}
-
-		// We found the first element. Now seek for the rest
-		CurrentPattern.Tokens.push_back(Tokens[(size_t)Index - 1]);
-		CurrentPattern.StartIndex = (uint64)Index - 1;
-		while (++PatternIndex < Pattern.Pattern.size())
-		{
-			auto& Token = Tokens[Index++];
-			auto PatternValue = Pattern[PatternIndex];
-
-			if (Token.Type != PatternValue)
-			{
-				CurrentPattern.Tokens.clear();
-				CurrentPattern.StartIndex = 0;
-				PatternIndex = 0;
-				goto restart;
-			}
-			else
-			{
-				CurrentPattern.Tokens.push_back(Tokens[(size_t)Index - 1]);
-			}
-		}
-
-		Output.push_back(CurrentPattern);
-		PatternIndex = 0;
-		CurrentPattern = {};
-		Index++;
-	}
-
-	return Output;
-}
-
 DParsedFolderData TFolderParser::ParseTokens(const PVector<DToken>& Tokens)
 {
-	// Define main patterns
+	if (Tokens.empty())
+		return {};
 
 	DParsedFolderData OutData;
 
-	auto WithoutParentWithApi = FindPattern(CLASS_WITHOUT_PARENT_WITH_API, Tokens);
-	auto WithParentWithApi = FindPattern(CLASS_WITH_PARENT_WITH_API, Tokens);
-	auto WitouthParentWithoutApi = FindPattern(CLASS_WITHOUT_PARENT_NO_API, Tokens);
-	auto WithParentWithoutApi = FindPattern(CLASS_WITH_PARENT_NO_API, Tokens);
+	int32 BraceDepth = 0;
+	static constexpr int32 CLASS_SCOPE_BRACE_DEPTH = 1;
+
+	// Find expose_class
+	auto Iter = Tokens.begin();
+	using TIterType = decltype(Iter);
+	while (Iter != Tokens.end())
+	{
+		auto _is_end = [&] { return Iter == Tokens.end(); };
+		auto _advance = [&] { ++Iter; return !_is_end(); };
+		auto _advance_safe = [&]<typename... Args>(fmt::format_string<Args...> Format = "Unexpected end of file", Args&&... InArgs)
+		{
+			if (!_advance())
+				Debug::Critical(Format, std::forward<Args>(InArgs)...);
+		};
+
+		auto _peek = [&](TIterType& OutIter) { OutIter = Iter + 1; return OutIter != Tokens.end(); };
+
+		while (Iter->Type != ETokenType::ExposedObjectType)
+		{
+			if (!_advance())
+			{
+				goto ending;
+			}
+		}
+#pragma region CLASS METADATA
+		// Began class metadata
+		{
+			_advance_safe("Unexpected end of file while parsing class metadata.");
+
+			DParsedTypeInfo TypeInfo = {};
+			if (Iter->Type == ETokenType::LeftParen)
+			{
+				if (!_advance())
+				{
+					_advance_safe("Unexpected end of file while parsing class metadata.");
+				}
+
+				while (Iter->Type != ETokenType::RightParen)
+				{
+					if (Iter->Type == ETokenType::Identifier)
+					{
+						TypeInfo.MetaSpecifiers.push_back(Iter->Name);
+						_advance_safe("Unexpected end of file while parsing class metadata.");
+					}
+					else if (Iter->Type == ETokenType::Comma)
+					{
+						_advance_safe("Unexpected end of file while parsing class metadata.");
+					}
+				}
+			}
+#pragma endregion
+
+#pragma region CLASS NAME, API AND PARENT
+			{
+				_advance_safe("Unexpected end of file while parsing class name.");
+
+				if (Iter->Type == ETokenType::ClassKeyword)
+				{
+					TypeInfo.TypeSpecifier = EParsedTypeSpecifier::Class;
+				}
+				else if (Iter->Type == ETokenType::StructKeyword)
+				{
+					TypeInfo.TypeSpecifier = EParsedTypeSpecifier::Struct;
+				}
+				else
+				{
+					Debug::Critical("Unexpected end of file while parsing class name");
+				}
+
+				_advance_safe();
+
+				// Parse class name or API
+				if (Iter->Type == ETokenType::Identifier)
+				{
+					// Check if next is also an identifier
+					TIterType PeekIter;
+					if (!_peek(PeekIter))
+					{
+						Debug::Critical("Unexpected end of file while parsing class name");
+					}
+
+					if (PeekIter->Type == ETokenType::Identifier)
+					{
+						TypeInfo.API = Iter->Name;
+						_advance_safe();
+						TypeInfo.Name = Iter->Name;
+						_advance_safe();
+					}
+					else if (PeekIter->Type == ETokenType::Colon)
+					{
+						TypeInfo.Name = Iter->Name;
+						_advance_safe();
+					}
+				}
+
+				// Parse parent if exists
+				if (Iter->Type == ETokenType::Colon)
+				{
+					_advance_safe();
+					if (Iter->Type != ETokenType::PublicKeyword)
+					{
+						Debug::Critical("A reflected parent class must have 'public' inheritance specifier.");
+					}
+
+					_advance_safe("Unexpected end of file while parsing class parent");
+					if (Iter->Type == ETokenType::Identifier)
+					{
+						TypeInfo.Parent = Iter->Name;
+					}
+					else
+					{
+						Debug::Critical("Unexpected token '{}' while expecting an identifier of parent class.", Iter->Name);
+					}
+
+					_advance_safe();
+				}
+				
+			}
+#pragma endregion
+
+#pragma region FIELD AND METHOD REFLECTION
+			if (Iter->Type == ETokenType::LeftBrace)
+			{
+				// We started the class body
+				BraceDepth++;
+
+				_advance_safe("Unexpected end of file while parsing class body.");
+
+				if (Iter->Type != ETokenType::GeneratedCode)
+				{
+					Debug::Critical("Unexpected token '{}' at the start of the class body. Expected " SIESTA_STRINGIFY(generated_code) "()", Iter->Name);
+				}
+				else
+				{
+					TypeInfo.GeneratedBodyLine = Iter->Line;
+				}
+
+				// Try reading fields
+				while (BraceDepth > 0)
+				{
+					_advance_safe();
+
+					if (Iter->Type == ETokenType::LeftBrace)
+					{
+						BraceDepth++;
+					}
+					else if (Iter->Type == ETokenType::RightBrace)
+					{
+						BraceDepth--;
+					}
+					else
+					{
+						if (BraceDepth == CLASS_SCOPE_BRACE_DEPTH)
+						{
+							if (Iter->Type == ETokenType::ExposedField)
+							{
+								DParsedVariableInfo FieldInfo = {};
+								FieldInfo.MemberOf = TypeInfo.Name;
+
+								// Start parcing the field
+								_advance_safe("Unexpected end of file while parsing field metadata.");
+								if (Iter->Type == ETokenType::LeftParen)
+								{
+									if (!_advance())
+									{
+										_advance_safe("Unexpected end of file while parsing field metadata.");
+									}
+
+									while (Iter->Type != ETokenType::RightParen)
+									{
+										if (Iter->Type == ETokenType::Identifier)
+										{
+											FieldInfo.MetaSpecifiers.push_back(Iter->Name);
+											_advance_safe("Unexpected end of file while parsing field metadata.");
+										}
+										else if (Iter->Type == ETokenType::Comma)
+										{
+											_advance_safe("Unexpected end of file while parsing field metadata.");
+										}
+									}
+
+									// Parse field type and name
+									_advance_safe();
+									if (Iter->Type == ETokenType::Identifier)
+									{	
+										// This is the type, but it may be parameterized, so put it temporarily in the field info and parse type paras.
+										FieldInfo.Type = Iter->Name;
+										_advance_safe();
+
+										// Try parsing type field name
+										if (Iter->Type == ETokenType::Identifier)
+										{
+											FieldInfo.Name = Iter->Name;
+											_advance_safe();
+										}
+										else if (Iter->Type == ETokenType::LeftAngular)
+										{
+											// Start parsing type parameters then field name
+											_advance_safe();
+											while (Iter->Type != ETokenType::RightAngular)
+											{
+												if (Iter->Type == ETokenType::Identifier)
+												{
+													FieldInfo.TypeParams.push_back(Iter->Name);
+													_advance_safe();
+												}
+												else if (Iter->Type == ETokenType::Comma)
+												{
+													// Found comma
+													_advance_safe();
+												}
+												else
+												{
+													Debug::Critical("Unexpected token '{}' [{} : {}] when parsing field type parameters. Note that nested parameterized types are unsupported.", Iter->Name, Iter->File, Iter->Line);
+												}
+											}
+
+											// Finished parsing type params, now parse the name
+											_advance_safe();
+
+											if (Iter->Type == ETokenType::Identifier)
+											{
+												FieldInfo.Name = Iter->Name;
+												_advance_safe();
+											}
+											else
+											{
+												Debug::Critical("Unexpected token {}.", Iter->Name);
+											}
+										}
+										else
+										{
+											Debug::Critical("Identifier not found.");
+										}
+
+										if (Iter->Type != ETokenType::Semicolon)
+										{
+											// Parse the default value
+											if (Iter->Type == ETokenType::Equal)
+											{
+												_advance_safe();
+
+												TStringStream DefaultValueStream;
+												while (Iter->Type != ETokenType::Semicolon)
+												{
+													// We are forgiving here :)
+													DefaultValueStream << Iter->Name;
+													_advance_safe();
+												}
+
+												FieldInfo.DefaultValue = DefaultValueStream.str();
+											}
+										}
+										
+										if (Iter->Type == ETokenType::Semicolon)
+										{
+											TypeInfo.Fields.push_back(std::move(FieldInfo));
+										}
+									}
+								}
+							} // EXPOSE FIELD END
+
+							if (Iter->Type == ETokenType::ExposeMethod)
+							{
+								
+							}
+						}
+					}
+				}
+			}
+#pragma endregion
+
+			// Flush type
+			OutData.Types.push_back(std::move(TypeInfo));
+
+			if (!_advance())
+			{
+				break;
+			}
+		}
+
+	ending:
+		continue;
+	}
 
 	return OutData;
 }

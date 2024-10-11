@@ -15,5 +15,9 @@ public:
 	PVector<DTypeReflectionData> GenerateReflection();
 
 private:
+	void GenerateHeaders();
+	void GenerateSources();
+
 	DParsedFolderData m_FolderData;
+	PVector<DTypeReflectionData> m_ReflectionData;
 };

@@ -7,8 +7,31 @@ TReflectionGenerator::TReflectionGenerator(const DParsedFolderData& FolderData)
 
 PVector<DTypeReflectionData> TReflectionGenerator::GenerateReflection()
 {
-	for (const DParsedTypeInfo& Type : m_FolderData.Types)
+	GenerateHeaders();
+	GenerateSources();
+
+	return m_ReflectionData;
+}
+
+static TString GenerateFileIDString(const DParsedTypeInfo& Type)
+{
+	return fmt::format("_{}_", Type.File);
+}
+
+static TString GenerateClassString(const DParsedTypeInfo& Type)
+{
+	
+}
+
+void TReflectionGenerator::GenerateHeaders()
+{
+	for (const auto& Type : m_FolderData.Types)
 	{
-		// Generate SType for the class
+		
 	}
+}
+
+void TReflectionGenerator::GenerateSources()
+{
+
 }

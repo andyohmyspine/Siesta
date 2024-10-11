@@ -115,3 +115,7 @@ inline constexpr auto MakeVariantFromValuesHelper(auto... Values)
 
 #define SIESTA_MAKE_VARIANT_TYPE_FROM_VALUES(Name, ...) using Name = decltype(MakeVariantFromValuesHelper(__VA_ARGS__))
 #define SIESTA_MAKE_TUPLE_TYPE_FROM_VALUES(Name, ...) using Name = decltype(std::make_tuple(__VA_ARGS__))
+
+#define SIESTA_PASTE(a, b) a ## b
+#define SIESTA_PASTE_2(a, b) SIESTA_PASTE(a, b)
+#define SIESTA_PASTE_3(a, b, c) SIESTA_PASTE_2(a, SIESTA_PASTE_2(b, c))

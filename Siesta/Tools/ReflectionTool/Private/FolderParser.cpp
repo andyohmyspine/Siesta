@@ -12,7 +12,6 @@ TFolderParser::TFolderParser(const TPath& FolderPath)
 
 DParsedFolderData TFolderParser::GenerateFolderInfo()
 {
-
 	// Go recursively over every file in project
 	for (const auto& Entry : TRecursiveDirectoryIterator(m_FolderPath))
 	{

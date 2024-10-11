@@ -8,6 +8,8 @@
 class SIESTA_OBJECT_API STypeRegistry
 {
 public:
+	
 
 private:	
+	PHashMap<TString, SType*> m_Types;
 };

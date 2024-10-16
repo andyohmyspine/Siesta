@@ -161,17 +161,17 @@ struct DToken
 	bool Valid() const { return Type != ETokenType::None; }
 };
 
-class TFolderParser
+class SFolderParser
 {
 public:
-	TFolderParser(const TPath& FolderPath);
+	SFolderParser(const TPath& FolderPath);
 
 	DParsedFolderData GenerateFolderInfo();
 
 private:
 	PVector<DFileWord> SplitFileIntoWords(const TString& FileContents);
 	PVector<DToken> TokenizeFile(const TString& FileName, const PVector<DFileWord>& Words);
-	DParsedFolderData ParseTokens(const PVector<DToken>& Tokens);
+	void ParseTokens(const PVector<DToken>& Tokens);
 
 private:
 	TPath m_FolderPath;

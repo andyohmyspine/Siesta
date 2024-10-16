@@ -14,13 +14,17 @@ public:
 	friend class SObjectFactory;
 
 #ifdef SIESTA_EXPOSE_REFLECTION_TOOL
-	friend class TFolderParser;
+	friend class SFolderParser;
 #endif
 
-private:
+	const TString& GetName() const { return m_Name; }
+
+protected:
+	TString m_Name;
+
 	/**
 	 * A function (typically lambda) used to instantiate an object of this class.
 	 */
 	using InstantiateFunction = std::function<SObject* (const SObjectInfo&)>;
-	InstantiateFunction Instantiate;
+	InstantiateFunction m_Instantiate;
 };

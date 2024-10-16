@@ -4,6 +4,8 @@
 #include "SiestaCore.h"
 #include "ObjectMacros.h"
 
+#include "Object.gen.h"
+
 class SType;
 
 class SIESTA_OBJECT_API SObjectInfo
@@ -38,7 +40,6 @@ private:
 	SObject* m_Parent = nullptr;
 	friend class SObjectFactory;
 };
-
 
 class SIESTA_OBJECT_API SObjectFactory
 {

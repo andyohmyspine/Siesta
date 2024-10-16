@@ -1,6 +1,8 @@
 #include "Object.h"
 #include "Type.h"
 
+#include "Object.gen.cpp"
+
 SObject::SObject(const SObjectInfo& Info)
 {
 }
@@ -12,9 +14,9 @@ SObject* SObjectFactory::CreateObject(const TString& Name, SType* Type, SObject*
 	ObjectInfo.Type = Type;
 	ObjectInfo.Parent = Parent;
 	
-	if (Type->Instantiate)
+	if (Type->m_Instantiate)
 	{
-		return Type->Instantiate(ObjectInfo);
+		return Type->m_Instantiate(ObjectInfo);
 	}
 
 	return nullptr;

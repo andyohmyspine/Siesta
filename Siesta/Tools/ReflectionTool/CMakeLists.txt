@@ -1,6 +1,7 @@
 Siesta_CreateExeModule(Siesta.ReflectionTool)
 
-target_link_libraries(Siesta.ReflectionTool PRIVATE Siesta.Core Siesta.Object)
+target_link_libraries(Siesta.ReflectionTool PRIVATE Siesta.Core)
+target_include_directories(Siesta.ReflectionTool PRIVATE ${CMAKE_SOURCE_DIR}/Siesta/Code/Core/Siesta.Object/Public)
 
 # Select all reflected targets from the Siesta codebase.
 # And add them to the reflection database
@@ -32,5 +33,6 @@ endforeach()
 string(REPLACE "\\" "/" _GlobalReflectionDatabase ${_GlobalReflectionDatabase})
 target_compile_definitions(Siesta.ReflectionTool PRIVATE 
     SIESTA_REFLECTION_FOLDERS="${_GlobalReflectionDatabase}"
-    SIESTA_REFLECTION_OUTPUT="${CMAKE_BINARY_DIR}/Generated/Headers"
-    SIESTA_EXPOSE_REFLECTION_TOOL)
+    SIESTA_REFLECTION_OUTPUT="${CMAKE_BINARY_DIR}/Generated/Sources"
+    SIESTA_EXPOSE_REFLECTION_TOOL
+    SIESTA_DONT_EXPAND_GENERATED_CODE)

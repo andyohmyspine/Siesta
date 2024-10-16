@@ -5,11 +5,13 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <future>
 #include <format>
 #include <chrono>
-
-#include "ReflectionGenerator.h"
+#include "ReflectedTypeDatabase.h"
+#include "HeaderGenerator.h"
+#include "SourceGenerator.h"
 
 inline static PVector<TString> SplitFilePaths(const TString& String)
 {
@@ -27,6 +29,17 @@ inline static PVector<TString> SplitFilePaths(const TString& String)
 	return Output;
 }
 
+static void WriteStringToFile(const TString& FilePath, const TString& Text)
+{
+	std::ofstream File(FilePath);
+	if (!File.is_open())
+	{
+		Debug::Critical("Failed to open file {} for writing.", FilePath);
+	}
+	File << Text << '\n';
+	File.flush();
+}
+
 int32 main(int32 ArgCount, char* const* ArgValues)
 {
 	Debug::Trace(" ----------------------------------------------------------\n");
@@ -40,42 +53,60 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 	TAsyncExecutor Executor{};
 	TAsyncGraph Graph{};
 
-	// Generate folder info
+	// Generate folder info with reflection data
 	DProtectedList<DParsedFolderData> ParsedFolderDatas;
-	DProtectedList<DTypeReflectionData> GeneratedReflectionDatas;
-
 	{
 		// Walk through all paths and read folder files
 		for (const TString& ProjectPath : ProjectPaths)
 		{
 			// Read folder info
-			auto ReadFolderTask = Graph.emplace(
+			Graph.emplace(
 				[CopiedPath = ProjectPath, &ParsedFolderDatas]
 				{
 					Debug::Trace(" - Generating folder info for folder: {}", CopiedPath);
-					TFolderParser Parser(CopiedPath);
+					SFolderParser Parser(CopiedPath);
 					ParsedFolderDatas.PushBack((Parser.GenerateFolderInfo()));
 				});
+		}
+	}
 
-			// Generate reflection for folder
-			auto GenerateReflectionTask = Graph.emplace(
-				[&ParsedFolderDatas, ProjectPath, &GeneratedReflectionDatas]
+	Executor.run(Graph);
+	Executor.wait_for_all();
+	Graph.clear();
+
+	// Collect all types
+	if (!std::filesystem::exists(SIESTA_REFLECTION_OUTPUT))
+	{
+		std::filesystem::create_directory(SIESTA_REFLECTION_OUTPUT);
+	}
+
+	for (const DParsedFolderData& FolderData : ParsedFolderDatas)
+	{
+		if (FolderData.ContainsReflection)
+		{
+			Graph.emplace(
+				[&]
 				{
-					Debug::Trace(" - Generating reflection info for folder: {}", ProjectPath);
+					SHeaderGenerator HeaderGenerator(FolderData);
+					PVector<DHeaderText> Headers = HeaderGenerator.GenerateHeaders();
 
-					const DParsedFolderData& FolderData = *ParsedFolderDatas.FindByPredicate([&ProjectPath](const auto& Value) { return Value.FolderPath == ProjectPath; });
-					if (FolderData.ContainsReflection)
+					for (const DHeaderText& Header : Headers)
 					{
-						TReflectionGenerator Generator(FolderData);
-						PVector<DTypeReflectionData> ReflectionData = Generator.GenerateReflection();
-						for (DTypeReflectionData& Data : ReflectionData)
-						{
-							GeneratedReflectionDatas.PushBack(Data);
-						}
+						WriteStringToFile(FormatString("{}/{}.gen.h", SIESTA_REFLECTION_OUTPUT, Header.HeaderName), Header.HeaderText);
 					}
 				});
 
-			GenerateReflectionTask.succeed(ReadFolderTask);
+			Graph.emplace(
+				[&]
+				{
+					SSourceGenerator SourceGenerator(FolderData);
+					PVector<DSourceText> Sources = SourceGenerator.GenerateSources();
+
+					for (const DSourceText& Source : Sources)
+					{
+						WriteStringToFile(FormatString("{}/{}.gen.cpp", SIESTA_REFLECTION_OUTPUT, Source.FileName), Source.FileText);
+					}
+				});
 		}
 	}
 

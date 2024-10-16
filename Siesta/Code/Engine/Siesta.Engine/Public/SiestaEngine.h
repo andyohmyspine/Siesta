@@ -3,6 +3,8 @@
 #include "Siesta.EngineAPI.h"
 #include "Object.h"
 
+#include "SiestaEngine.gen.h"
+
 expose_object()
 class SIESTA_ENGINE_API SEngine : public SObject
 {

@@ -1,5 +1,7 @@
 #include "SiestaEngine.h"
 
+#include "SiestaEngine.gen.cpp"
+
 SIESTA_ENGINE_API SEngine* CreateEngine()
 {
 	return new SEngine({});

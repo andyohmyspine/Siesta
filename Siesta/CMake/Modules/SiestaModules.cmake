@@ -20,7 +20,7 @@ macro(Siesta_DefaultModuleProperties _ModuleName)
     cmake_path(GET CMAKE_CURRENT_LIST_DIR PARENT_PATH _ParentPath)
     cmake_path(RELATIVE_PATH _ParentPath BASE_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE _ParentPath_RELATIVE)
     set_target_properties(${_ModuleName} PROPERTIES FOLDER ${_ParentPath_RELATIVE})
-    target_include_directories(${_ModuleName} PUBLIC Public PRIVATE Private ${CMAKE_BINARY_DIR}/Generated/Headers)
+    target_include_directories(${_ModuleName} PUBLIC Public PRIVATE Private ${CMAKE_BINARY_DIR}/Generated/Sources)
 
     target_compile_definitions(${_ModuleName} PRIVATE SIESTA_REFLECTED_TARGET)
 endmacro()

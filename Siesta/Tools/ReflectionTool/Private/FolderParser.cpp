@@ -5,12 +5,12 @@
 #include <format>
 #include <array>
 
-TFolderParser::TFolderParser(const TPath& FolderPath)
+SFolderParser::SFolderParser(const TPath& FolderPath)
 	: m_FolderPath(FolderPath)
 {
 }
 
-DParsedFolderData TFolderParser::GenerateFolderInfo()
+DParsedFolderData SFolderParser::GenerateFolderInfo()
 {
 	// Go recursively over every file in project
 	for (const auto& Entry : TRecursiveDirectoryIterator(m_FolderPath))
@@ -32,14 +32,15 @@ DParsedFolderData TFolderParser::GenerateFolderInfo()
 		// 2. Scan file for classes and structs
 		PVector<DFileWord> Words = SplitFileIntoWords(FileContents);
 		PVector<DToken> Tokens = TokenizeFile(FilePath.stem().string(), Words);
-		m_OutData = ParseTokens(Tokens);
+		ParseTokens(Tokens);
 	}
 
 	m_OutData.FolderPath = m_FolderPath.string();
+	m_OutData.ContainsReflection = !m_OutData.Types.empty();
 	return m_OutData;
 }
 
-PVector<DFileWord> TFolderParser::SplitFileIntoWords(const TString& FileContents)
+PVector<DFileWord> SFolderParser::SplitFileIntoWords(const TString& FileContents)
 {
 	TString Token;
 	PVector<DFileWord> Words;
@@ -148,7 +149,7 @@ PVector<DFileWord> TFolderParser::SplitFileIntoWords(const TString& FileContents
 	return Words;
 }
 
-PVector<DToken> TFolderParser::TokenizeFile(const TString& FileName, const PVector<DFileWord>& Words)
+PVector<DToken> SFolderParser::TokenizeFile(const TString& FileName, const PVector<DFileWord>& Words)
 {
 	static const PHashMap<TString, ETokenType> SpecialSymbolTokens
 	{
@@ -370,12 +371,13 @@ static PVector<TString> ParseMetadataSpecifiers(PVector<DToken>::const_iterator&
 	return Out;
 }
 
-DParsedFolderData TFolderParser::ParseTokens(const PVector<DToken>& Tokens)
+void SFolderParser::ParseTokens(const PVector<DToken>& Tokens)
 {
 	if (Tokens.empty())
-		return {};
+		return;
 
-	DParsedFolderData OutData;
+	// A little hack for not rewriting all occurances of OutData.
+	DParsedFolderData& OutData = m_OutData;
 
 	int32 BraceDepth = 0;
 	static constexpr int32 CLASS_SCOPE_BRACE_DEPTH = 1;
@@ -631,7 +633,4 @@ DParsedFolderData TFolderParser::ParseTokens(const PVector<DToken>& Tokens)
 	ending:
 		continue;
 	}
-	
-	OutData.ContainsReflection = OutData.Types.size() > 0;
-	return OutData;
 }

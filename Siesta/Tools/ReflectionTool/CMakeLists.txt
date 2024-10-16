@@ -11,7 +11,9 @@ macro(Siesta_AddAllTargetsToReflection _Directory)
     foreach(_Target IN LISTS _Targets)
         get_target_property(_TargetDefines ${_Target} COMPILE_DEFINITIONS)
         if("SIESTA_REFLECTED_TARGET" IN_LIST _TargetDefines)
-            set(Siesta_ReflectedTargets ${Siesta_ReflectedTargets} ${_Target})
+            if(NOT "SIESTA_AVOID_REFLECTION" IN_LIST _TargetDefines)
+                set(Siesta_ReflectedTargets ${Siesta_ReflectedTargets} ${_Target})
+            endif()
         endif()
     endforeach()
 
@@ -28,6 +30,8 @@ set(_GlobalReflectionDatabase)
 foreach(_ReflectedTarget IN LISTS Siesta_ReflectedTargets)
     get_target_property(_TargetSourceDir ${_ReflectedTarget} SOURCE_DIR)
     list(APPEND _GlobalReflectionDatabase "${_TargetSourceDir}|")
+
+    add_dependencies(${_ReflectedTarget} Siesta.ReflectionTool)
 endforeach()
 
 string(REPLACE "\\" "/" _GlobalReflectionDatabase ${_GlobalReflectionDatabase})
@@ -36,3 +40,6 @@ target_compile_definitions(Siesta.ReflectionTool PRIVATE
     SIESTA_REFLECTION_OUTPUT="${CMAKE_BINARY_DIR}/Generated/Sources"
     SIESTA_EXPOSE_REFLECTION_TOOL
     SIESTA_DONT_EXPAND_GENERATED_CODE)
+
+# TODO:
+# NEED TO FIGURE OUT HOW TO REFLECT ONLY DEPENDEND TARGETS IF NOT BUILDING EVERYTHING

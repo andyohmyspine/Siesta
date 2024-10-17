@@ -4,4 +4,7 @@
 
 class SPlatformGLFW : public IPlatformInterface
 {
+public:
+	SPlatformGLFW();
+	~SPlatformGLFW();
 };

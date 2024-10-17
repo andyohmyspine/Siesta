@@ -47,6 +47,9 @@ static void GenerateTypeFields(const DParsedTypeInfo& TypeInfo, TStringStream& S
 		Stream << FormatString("\t\tclass : public SField_TemplateBase<{}>\n", TypeName);
 		Stream << "\t\t{\n";
 		{
+			/**
+			 * Getter
+			 */
 			if (!IsPointer)
 			{
 
@@ -67,6 +70,9 @@ static void GenerateTypeFields(const DParsedTypeInfo& TypeInfo, TStringStream& S
 				Stream << "}\n";
 			}
 
+			/**
+			 * Setter
+			 */
 			if (IsPointer)
 			{
 				Stream << FormatString("\t\t\tvirtual void SetValue(SObject* Object, {} const& Value) override", TypeName);
@@ -85,6 +91,8 @@ static void GenerateTypeFields(const DParsedTypeInfo& TypeInfo, TStringStream& S
 				}
 				Stream << "}\n";
 			}
+
+			// Misc functions
 			Stream << FormatString("\t\t\tvirtual TStringView GetName() const override", TypeName);
 			Stream << "{";
 			{
@@ -101,7 +109,7 @@ static void GenerateTypeFields(const DParsedTypeInfo& TypeInfo, TStringStream& S
 		}
 		Stream << "\t\t}";
 		Stream << FormatString("{}_Var;\n", Field.Name);
-		Stream << FormatString("\t\tAddField(\"{0}\", MakeShared<decltype({0}_Var)>());\n\n", Field.Name);
+		Stream << FormatString("\t\tAddField(\"{0}\", new decltype({0}_Var)());\n\n", Field.Name);
 	}
 }
 
@@ -134,7 +142,6 @@ PVector<DSourceText> SSourceGenerator::GenerateSources()
 			SourceStream << FormatString("class SType_{} : public SType\n", Type.Name);
 			SourceStream << "{\n";
 			{
-
 				SourceStream << FormatString("public:\n\tSType_{}()", Type.Name);
 				// Constructor
 				SourceStream << "\t{\n";
@@ -157,6 +164,19 @@ PVector<DSourceText> SSourceGenerator::GenerateSources()
 
 				// End of the constructor
 				SourceStream << "\t}\n";
+
+				if (!Type.Parent.empty())
+				{
+					SourceStream << "\tvirtual TStringView GetParentName() const override { " << "return "
+						<< FormatString("\"{}\";", Type.Parent) << "}\n";
+
+					SourceStream << "\tvirtual SType* GetParentType() const override { " << "return STypeRegistry::Get().GetType(TString(GetParentName())); }\n";
+				}
+				else
+				{
+					SourceStream << "\tvirtual TStringView GetParentName() const override { " << "return {}; }\n";
+					SourceStream << "\tvirtual SType* GetParentType() const override { " << "return nullptr; }\n";
+				}
 			}
 			SourceStream << "};\n";
 			// Type registrar

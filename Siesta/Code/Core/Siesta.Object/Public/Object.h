@@ -67,11 +67,29 @@ static T* CreateObject(const TString& Name, SObject* Parent = nullptr)
 }
 
 template<typename T>
-const T& GetFieldValue(const SObject* Object, TStringView Name)
+const T& GetFieldValueChecked(const SObject* Object, TStringView Name)
 {
-	SType* Type = Object->GetType();
-	auto Field = Type->GetField(Name);
+	const SType* Type = Object->GetType();
+	const SField* Field = Type->GetField(Name);
+	if (!Field)
+	{
+		Debug::Critical("Could not find field with name '{}' in type '{}'", Name, Type->GetName());
+	}
 	return Field->GetValueAs<T>(Object);
+}
+
+template<typename T>
+const T* TryGetFieldValue(const SObject* Object, TStringView Name)
+{
+	const SType* Type = Object->GetType();
+	SField* Field = Type->GetField(Name);
+	if (!Field)
+	{
+		Debug::Warning("Could not find field with name '{}' in type '{}'", Name, Type->GetName());
+		return nullptr;
+	}
+	
+	return &Field->GetValueAs<T>(Object);
 }
 
 template<typename T>

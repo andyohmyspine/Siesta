@@ -21,13 +21,16 @@ public:
 
 	virtual ~SType() = default;
 
-	const TString& GetName() const { return m_Name; }
-	PSharedPtr<SField> GetField(TStringView Name) const;
+	SField* GetField(TStringView Name) const;
+	inline TStringView GetName() const { return m_Name; }
+	
+	virtual TStringView GetParentName() const = 0;
+	virtual SType* GetParentType() const = 0;
 
 protected:
 	TString m_Name;
 
-	void AddField(TStringView FieldName, PSharedPtr<SField> Field);
+	void AddField(TStringView FieldName, SField* Field);
 
 	/**
 	 * A function (typically lambda) used to instantiate an object of this class.
@@ -35,5 +38,6 @@ protected:
 	using InstantiateFunction = std::function<SObject*(const SObjectInfo&)>;
 	InstantiateFunction m_Instantiate;
 
-	PHashMap<TStringView, PSharedPtr<SField>> m_Fields;
+	mutable PHashMap<TStringView, SField*> m_Fields;
+	mutable PHashMap<TStringView, SField*> m_ParentFields;
 };

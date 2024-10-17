@@ -9,5 +9,7 @@ DEFINE_OBJECT_CONSTRUCTOR(SEditorEngine)
 
 int main()
 {
-	auto Engine = CreateEngine();
+	SEngine* Engine = CreateEngine("SEditorEngine");
+	SetFieldValue(Engine, "Lols1", 25.0f);
+	SIESTA_BREAK();
 }

@@ -15,6 +15,9 @@ void STypeRegistry::RegisterType(const TString& Name, SType* Type)
 
 SType* STypeRegistry::GetType(const TString& Name)
 {
-	return Get().m_Types.at(Name);
+	if(Get().m_Types.contains(Name))
+		return Get().m_Types.at(Name);
+
+	return nullptr;
 }
 

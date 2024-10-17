@@ -4,3 +4,6 @@ add_subdirectory(taskflow)
 
 add_library(spdlog INTERFACE)
 target_include_directories(spdlog INTERFACE spdlog/include)
+
+add_library(json INTERFACE)
+target_include_directories(json INTERFACE json/single_include)

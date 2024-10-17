@@ -10,6 +10,6 @@ DEFINE_OBJECT_CONSTRUCTOR(SEditorEngine)
 int main()
 {
 	SEngine* Engine = CreateEngine("SEditorEngine");
-	SetFieldValue(Engine, "Lols1", 25.0f);
-	SIESTA_BREAK();
+	Engine->BeginMainLoop();
+	delete Engine;
 }

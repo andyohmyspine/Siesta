@@ -119,3 +119,13 @@ inline constexpr auto MakeVariantFromValuesHelper(auto... Values)
 #define SIESTA_PASTE(a, b) a ## b
 #define SIESTA_PASTE_2(a, b) SIESTA_PASTE(a, b)
 #define SIESTA_PASTE_3(a, b, c) SIESTA_PASTE_2(a, SIESTA_PASTE_2(b, c))
+
+// Defer
+template <typename F>
+struct invoke_on_dtor : F
+{
+	~invoke_on_dtor() { static_cast<F&>(*this)(); }
+};
+
+#define defer(...) \
+    auto SIESTA_PASTE_2(scope_exit_, __LINE__) = ::invoke_on_dtor{[&] __VA_ARGS__ }

@@ -48,6 +48,10 @@ target_compile_definitions(Siesta.ReflectionTool PRIVATE
 add_custom_command(TARGET Siesta.ReflectionTool POST_BUILD
     COMMAND $<TARGET_FILE:Siesta.ReflectionTool>)
 
+add_custom_command(OUTPUT DummyOutput3000 POST_BUILD
+    COMMAND $<TARGET_FILE:Siesta.ReflectionTool>)
+
+
 foreach(_ReflectedTarget IN LISTS Siesta_ReflectedTargets)
     get_target_property(_TargetSourceDir ${_ReflectedTarget} SOURCE_DIR)
  #   add_custom_command(TARGET ${_ReflectedTarget} PRE_BUILD

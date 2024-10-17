@@ -7,7 +7,10 @@
 
 class SReflectedTypeDatabase
 {
+	static SReflectedTypeDatabase* Instance;
+
 public:
+	static SReflectedTypeDatabase& Get() { return *Instance; }
 	SReflectedTypeDatabase(const PVector<DParsedTypeInfo>& ParsedTypes);
 
 	inline const DParsedTypeInfo* TryGetType(const TString& Name) const 
@@ -24,6 +27,8 @@ public:
 	{
 		return m_ParsedTypes | std::views::values;
 	}
+
+	const bool IsChildOf(const TString& Derived, const TString& Base) const;
 
 private:
 	PHashMap<TString, DParsedTypeInfo> m_ParsedTypes;

@@ -2,16 +2,7 @@
 
 #include "SiestaEngine.gen.cpp"
 
-SIESTA_ENGINE_API SEngine* CreateEngine()
-{
-	return new SEngine({});
-}
-
-SEngine::SEngine(const SObjectInfo& Info)
-	: SObject(Info)
-{
-
-}
+DEFINE_OBJECT_CONSTRUCTOR(SEngine) {}
 
 SEngine::~SEngine()
 {
@@ -21,4 +12,9 @@ SEngine::~SEngine()
 PVector<TString> SEngine::GetStrings(const SObject* OtherObject) const
 {
 	return {};
+}
+
+SIESTA_ENGINE_API SEngine* CreateEngine(TStringView EngineTypeName)
+{
+	return (SEngine*)CreateObject("Engine", STypeRegistry::GetType(TString(EngineTypeName)));
 }

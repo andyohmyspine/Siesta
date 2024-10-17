@@ -4,6 +4,9 @@
 #include "Object.gen.cpp"
 
 SObject::SObject(const SObjectInfo& Info)
+	: m_Type(Info.Type)
+	, m_Parent(Info.Parent)
+	, m_Name(Info.Name)
 {
 }
 

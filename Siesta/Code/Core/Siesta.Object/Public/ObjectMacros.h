@@ -11,3 +11,15 @@
 #define generated_code()
 #endif
 
+// Class specifiers
+#define abstract
+
+// Method specifiers
+
+// Field specifiers
+#define getter
+#define setter
+
+#define DECLARE_OBJECT_CONSTRUCTOR(Name) Name(const SObjectInfo& Info)
+#define DEFINE_OBJECT_CONSTRUCTOR(Name) Name::Name(const SObjectInfo& Info) : TBase(Info)
+#define DEFINE_OBJECT_CONSTRUCTOR_INLINE(Name) Name(const SObjectInfo& Info) : TBase(Info)

@@ -36,7 +36,8 @@ PVector<DHeaderText> SHeaderGenerator::GenerateHeaders() const
 				HeaderStream << FormatString("using TBase = {};", Type.Parent);
 			}
 
-			HeaderStream << "static SType* GetStaticType();\n";
+			HeaderStream << FormatString("friend class SType_{};", Type.Name);
+			HeaderStream << "public:static SType* GetStaticType(); private:\n";
 			HeaderStream << "\n";
 
 			TString TypeFulfillment = FormatString("SIESTA_TYPE_{}_ClassInfo", Type.Name);

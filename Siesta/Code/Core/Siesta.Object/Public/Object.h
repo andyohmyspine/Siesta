@@ -3,10 +3,9 @@
 #include "Siesta.ObjectAPI.h"
 #include "SiestaCore.h"
 #include "ObjectMacros.h"
+#include "Type.h"
 
 #include "Object.gen.h"
-
-class SType;
 
 class SIESTA_OBJECT_API SObjectInfo
 {
@@ -32,12 +31,15 @@ public:
 	inline SType* GetType() const { return m_Type; }
 	inline SObject* GetParent() const { return m_Parent; }
 
+	inline const TString& GetName() const { return m_Name; }
+
 protected:
 	SObject(const SObjectInfo& Info);
 
 private:
 	SType* m_Type = nullptr;
 	SObject* m_Parent = nullptr;
+	TString m_Name{};
 	friend class SObjectFactory;
 };
 
@@ -47,9 +49,35 @@ public:
 	static SObject* CreateObject(const TString& Name, SType* Type, SObject* Parent = nullptr);
 
 	template<std::derived_from<SObject> T>
-	static T* CreateObject(const TString& Name, SObject* Parent)
+	static T* CreateObject(const TString& Name, SObject* Parent = nullptr)
 	{
-		return static_cast<T*>(CreateObject(Name, T::StaticType(), Parent));
+		return static_cast<T*>(CreateObject(Name, T::GetStaticType(), Parent));
 	}
 };
 
+inline SObject* CreateObject(const TString& Name, SType* Type, SObject* Parent = nullptr)
+{
+	return SObjectFactory::CreateObject(Name, Type, Parent);
+}
+
+template<std::derived_from<SObject> T>
+static T* CreateObject(const TString& Name, SObject* Parent = nullptr)
+{
+	return static_cast<T*>(CreateObject(Name, T::GetStaticType(), Parent));
+}
+
+template<typename T>
+const T& GetFieldValue(const SObject* Object, TStringView Name)
+{
+	SType* Type = Object->GetType();
+	auto Field = Type->GetField(Name);
+	return Field->GetValueAs<T>(Object);
+}
+
+template<typename T>
+void SetFieldValue(SObject* Object, TStringView Name, const T& Value)
+{
+	SType* Type = Object->GetType();
+	auto Field = Type->GetField(Name);
+	Field->SetValueAs<T>(Object, Value);
+}

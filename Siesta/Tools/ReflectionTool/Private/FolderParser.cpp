@@ -290,6 +290,7 @@ static DTypeInfo ParseTypeInfo(PVector<DToken>::const_iterator& Iter, PVector<DT
 					Debug::Critical("Unexpected token '{}' [{} : {}] when parsing field type parameters. Note that nested parameterized types are unsupported.", Iter->Name, Iter->File, Iter->Line);
 				}
 			}
+			_advance_safe();
 		}
 	}
 
@@ -575,8 +576,6 @@ void SFolderParser::ParseTokens(const PVector<DToken>& Tokens)
 								MethodInfo.ReturnType = ReturnTypeInfo.Type;
 								MethodInfo.ReturnDecoratorMask = ReturnTypeInfo.DecoratorMask;
 								MethodInfo.ReturnTypeParams = ReturnTypeInfo.TypeParams;
-
-								_advance_safe();
 
 								// Parse method name
 								if (Iter->Type == ETokenType::Identifier)

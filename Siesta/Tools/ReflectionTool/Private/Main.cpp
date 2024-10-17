@@ -48,7 +48,15 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 
 	const auto BeginTimePoint = std::chrono::high_resolution_clock::now();
 
-	PVector<TString> ProjectPaths = SplitFilePaths(SIESTA_REFLECTION_FOLDERS);
+	PVector<TString> ProjectPaths;
+	if (ArgCount > 1)
+	{
+		ProjectPaths.push_back(ArgValues[1]);
+	}
+	else
+	{
+		ProjectPaths = SplitFilePaths(SIESTA_REFLECTION_FOLDERS);
+	}
 
 	TAsyncExecutor Executor{};
 	TAsyncGraph Graph{};
@@ -79,6 +87,22 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 	{
 		std::filesystem::create_directory(SIESTA_REFLECTION_OUTPUT);
 	}
+
+	// Create type database
+	PVector<DParsedTypeInfo> Types;
+	for (const DParsedFolderData& FolderData : ParsedFolderDatas)
+	{
+		if (FolderData.ContainsReflection)
+		{
+			for (const auto& Type : FolderData.Types)
+			{
+				Types.push_back(Type);
+			}
+		}
+	}
+
+	// This class is a singleton.
+	SReflectedTypeDatabase TypeDatabase(Types);
 
 	for (const DParsedFolderData& FolderData : ParsedFolderDatas)
 	{

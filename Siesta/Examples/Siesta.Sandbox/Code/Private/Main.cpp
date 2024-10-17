@@ -1,6 +1,8 @@
 #include <SiestaEngine.h>
 
+#include "Type.h"
+
 int main()
 {
-	SEngine* Engine = CreateEngine();
+	auto Engine = CreateEngine();
 }

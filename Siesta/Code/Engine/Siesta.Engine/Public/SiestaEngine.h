@@ -15,15 +15,16 @@ public:
 	virtual ~SEngine();
 
 	expose_field(interesting)
-	float Lols = {};
+	float Lols = 15.0f;
 
-	expose_field(parent, base, lol, coco)
+	expose_field(parent, base, lol, coco) 
 	SObject* OtherObject = nullptr;
 
-	expose_method(somespecifier)
+	expose_method(somespecifier) 
 	PVector<TString> GetStrings(const SObject* OtherObject = nullptr) const;
+
+	expose_method()
+	float GetLols() const { return Lols; }
 };
 
-SIESTA_ENGINE_API SEngine* CreateEngine();
-
-
+SIESTA_ENGINE_API SEngine* CreateEngine(TStringView EngineTypeName = "SEngine");

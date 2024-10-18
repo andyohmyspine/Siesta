@@ -17,4 +17,3 @@ SRenderAPI* SRenderAPI::Load(TStringView Name /*= DEFAULT_RENDER_API*/)
 
 	return CreateObject<SRenderAPI>("RenderAPI", STypeRegistry::GetType(TString(Name)));
 }
-

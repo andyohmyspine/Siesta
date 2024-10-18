@@ -8,8 +8,6 @@ macro(Siesta_LoadModuleFiles)
             ${CMAKE_CURRENT_LIST_DIR}/Private/*.h
             ${CMAKE_CURRENT_LIST_DIR}/Private/*.cpp
             ${CMAKE_CURRENT_LIST_DIR}/Private/*.inl)
-
-        
 endmacro()
 
 macro(Siesta_DefaultModuleProperties _ModuleName)

@@ -5,6 +5,8 @@
 
 #include "SiestaRenderAPI.gen.h"
 
+class SRenderDevice;
+
 #ifdef WIN32
 #define DEFAULT_RENDER_API "SD3D12RenderAPI"
 #define DEFAULT_RENDER_API_MODULE "Siesta.RenderD3D12"
@@ -23,6 +25,10 @@ public:
 
 	static SRenderAPI* Load(TStringView Name = DEFAULT_RENDER_API);
 
+
 private:
 	SModule* m_LoadedModule{};
+
+protected:
+	SRenderDevice* m_RenderDevice{};
 };

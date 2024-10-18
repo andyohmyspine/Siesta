@@ -45,5 +45,9 @@ target_compile_definitions(Siesta.ReflectionTool PRIVATE
 # NEED TO FIGURE OUT HOW TO REFLECT ONLY DEPENDEND TARGETS IF NOT BUILDING EVERYTHING
 # Solution: Args passing
 
-add_custom_command(TARGET Siesta.ReflectionTool POST_BUILD COMMAND $<TARGET_FILE:Siesta.ReflectionTool>)
-add_custom_command(OUTPUT DummyOutput3000 POST_BUILD COMMAND $<TARGET_FILE:Siesta.ReflectionTool>)
+# add_custom_command(TARGET Siesta.ReflectionTool POST_BUILD COMMAND $<TARGET_FILE:Siesta.ReflectionTool>)
+# add_custom_command(OUTPUT DummyOutput3000.txt PRE_BUILD COMMAND $<TARGET_FILE:Siesta.ReflectionTool>)
+
+add_custom_target(Siesta.RunReflection ALL)
+add_custom_command(TARGET Siesta.RunReflection PRE_BUILD COMMAND $<TARGET_FILE:Siesta.ReflectionTool>)
+set_target_properties(Siesta.RunReflection PROPERTIES FOLDER Siesta/Rules)

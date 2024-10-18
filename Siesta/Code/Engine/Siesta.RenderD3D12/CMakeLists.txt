@@ -5,5 +5,7 @@ target_link_libraries(Siesta.RenderD3D12
         Siesta.RenderCore
         
     PRIVATE
-        d3d12
-        dxgi)
+        DirectX-Headers
+        DirectX-Guids
+        dxgi
+        d3d12)

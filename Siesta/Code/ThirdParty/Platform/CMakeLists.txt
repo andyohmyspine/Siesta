@@ -3,4 +3,8 @@ if(WIN32 OR UNIX)
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "")
     add_subdirectory(glfw)
+
+    if(MSVC)
+        set_target_properties(glfw update_mappings uninstall PROPERTIES FOLDER Siesta/ThirdParty/Platform)
+    endif()
 endif()

@@ -10,3 +10,7 @@ target_include_directories(json INTERFACE json/single_include)
 
 add_library(dynalo INTERFACE)
 target_include_directories(dynalo INTERFACE dynalo/include)
+
+if(MSVC)
+    set_target_properties(Continuous Experimental Nightly NightlyMemoryCheck PROPERTIES FOLDER Siesta/ThirdParty/Tests)
+endif()

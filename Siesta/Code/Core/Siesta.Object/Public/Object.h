@@ -61,9 +61,21 @@ inline SObject* CreateObject(const TString& Name, SType* Type, SObject* Parent =
 }
 
 template<std::derived_from<SObject> T>
+inline PUniquePtr<T> CreateObjectUnique(const TString& Name, SType* Type, SObject* Parent = nullptr)
+{
+	return WrapUnique((T*)CreateObject(Name, Type, Parent));
+}
+
+template<std::derived_from<SObject> T>
 static T* CreateObject(const TString& Name, SObject* Parent = nullptr)
 {
 	return static_cast<T*>(CreateObject(Name, T::GetStaticType(), Parent));
+}
+
+template<std::derived_from<SObject> T>
+static T* CreateObject(const TString& Name, SType* Type, SObject* Parent = nullptr)
+{
+	return static_cast<T*>(CreateObject(Name, Type, Parent));
 }
 
 template<typename T>

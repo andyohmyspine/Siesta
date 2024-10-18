@@ -7,6 +7,7 @@
 
 class IPlatformInterface;
 class IPlatformWindow;
+class SRenderAPI;
 
 expose_object()
 class SIESTA_ENGINE_API SEngine : public SObject
@@ -14,7 +15,7 @@ class SIESTA_ENGINE_API SEngine : public SObject
 	generated_code()
 
 public:
-	SEngine(const SObjectInfo& Info);
+	DECLARE_OBJECT_CONSTRUCTOR(SEngine);
 	virtual ~SEngine();
 
 	void BeginMainLoop();
@@ -22,6 +23,8 @@ public:
 private:
 	IPlatformInterface* m_Platform{};
 	IPlatformWindow* m_MainWindow{};
+
+	SRenderAPI* m_RenderAPI;
 };
 
 SIESTA_ENGINE_API SEngine* CreateEngine(TStringView EngineTypeName = "SEngine");

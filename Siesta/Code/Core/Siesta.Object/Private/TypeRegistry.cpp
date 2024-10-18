@@ -18,6 +18,7 @@ SType* STypeRegistry::GetType(const TString& Name)
 	if(Get().m_Types.contains(Name))
 		return Get().m_Types.at(Name);
 
+	Debug::Critical("Could not find type with name: {}", Name);
 	return nullptr;
 }
 

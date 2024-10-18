@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <concepts>
 
 using int8 = int8_t;
 using int16 = int16_t;
@@ -41,6 +42,13 @@ inline PUniquePtr<T> MakeUnique(Args&&... InArgs)
 {
 	return std::make_unique<T>(std::forward<Args>(InArgs)...);
 }
+
+template<typename T>
+inline PUniquePtr<T> WrapUnique(T* Obj)
+{
+	return PUniquePtr<T>(Obj);
+}
+
 
 template<typename T>
 using PWeakPtr = std::weak_ptr<T>;
@@ -120,12 +128,19 @@ inline constexpr auto MakeVariantFromValuesHelper(auto... Values)
 #define SIESTA_PASTE_2(a, b) SIESTA_PASTE(a, b)
 #define SIESTA_PASTE_3(a, b, c) SIESTA_PASTE_2(a, SIESTA_PASTE_2(b, c))
 
-// Defer
-template <typename F>
-struct invoke_on_dtor : F
-{
-	~invoke_on_dtor() { static_cast<F&>(*this)(); }
-};
+#define SIESTA_SIMPLE_TYPE_CONVERTER(_type)                                                          \
+	inline constexpr _type SIESTA_PASTE_2(to_, _type)(std::convertible_to<_type> auto value) noexcept \
+	{                                                                                                \
+		return static_cast<_type>(value);                                                            \
+	}
 
-#define defer(...) \
-    auto SIESTA_PASTE_2(scope_exit_, __LINE__) = ::invoke_on_dtor{[&] __VA_ARGS__ }
+SIESTA_SIMPLE_TYPE_CONVERTER(uint8);
+SIESTA_SIMPLE_TYPE_CONVERTER(uint16);
+SIESTA_SIMPLE_TYPE_CONVERTER(uint32);
+SIESTA_SIMPLE_TYPE_CONVERTER(uint64);
+SIESTA_SIMPLE_TYPE_CONVERTER(int8);
+SIESTA_SIMPLE_TYPE_CONVERTER(int16);
+SIESTA_SIMPLE_TYPE_CONVERTER(int32);
+SIESTA_SIMPLE_TYPE_CONVERTER(int64);
+SIESTA_SIMPLE_TYPE_CONVERTER(float);
+SIESTA_SIMPLE_TYPE_CONVERTER(double);

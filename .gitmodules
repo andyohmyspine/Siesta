@@ -10,3 +10,6 @@
 [submodule "Siesta/Code/ThirdParty/Core/json"]
 	path = Siesta/Code/ThirdParty/Core/json
 	url = https://github.com/nlohmann/json.git
+[submodule "Siesta/Code/ThirdParty/Core/dynalo"]
+	path = Siesta/Code/ThirdParty/Core/dynalo
+	url = https://github.com/maddouri/dynalo.git

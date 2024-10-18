@@ -25,7 +25,6 @@ public:
 
 	static SRenderAPI* Load(TStringView Name = DEFAULT_RENDER_API);
 
-
 private:
 	SModule* m_LoadedModule{};
 

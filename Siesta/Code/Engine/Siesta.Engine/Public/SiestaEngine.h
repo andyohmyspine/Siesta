@@ -24,6 +24,7 @@ private:
 	IPlatformInterface* m_Platform{};
 	IPlatformWindow* m_MainWindow{};
 
+	expose_field()
 	SRenderAPI* m_RenderAPI;
 };
 

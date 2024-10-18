@@ -13,3 +13,6 @@
 [submodule "Siesta/Code/ThirdParty/Core/dynalo"]
 	path = Siesta/Code/ThirdParty/Core/dynalo
 	url = https://github.com/maddouri/dynalo.git
+[submodule "Siesta/Code/ThirdParty/Render/DirectX-Headers"]
+	path = Siesta/Code/ThirdParty/Render/DirectX-Headers
+	url = https://github.com/microsoft/DirectX-Headers.git

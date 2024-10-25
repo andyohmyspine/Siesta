@@ -13,7 +13,7 @@ using uint16 = uint16_t;
 using uint32 = uint32_t;
 using uint64 = uint64_t;
 
-using STypeOfNull = decltype(nullptr);
+using TTypeOfNull = decltype(nullptr);
 
 #include <string>
 #include <string_view>
@@ -60,6 +60,10 @@ using PDefAllocator = std::allocator<T>;
 
 template<typename T, typename Alloc = PDefAllocator<T>>
 using PVector = std::vector<T, Alloc>;
+
+#include <array>
+template<typename T, uint64 Size>
+using PArray = std::array<T, Size>;
 
 #include <list>
 

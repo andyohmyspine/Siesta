@@ -3,6 +3,8 @@
 
 #include "SiestaRenderD3D12.gen.cpp"
 
+uint8 GCurrentFrameInFlight = 0;
+
 DEFINE_OBJECT_CONSTRUCTOR(SD3D12RenderAPI)
 {
 	m_RenderDevice = new SD3D12RenderDevice();

@@ -30,17 +30,25 @@ public:
 
 	static SRenderAPI* GetOrLoad(TStringView Name = DEFAULT_RENDER_API);
 
+	template<typename T>
+	static T* GetOrLoad(TStringView Name = DEFAULT_RENDER_API)
+	{
+		return static_cast<T*>(GetOrLoad(Name));
+	}
+
 	inline SRenderDevice* GetDevice() const { return m_RenderDevice; }
 	PSharedPtr<SWindowRenderState> CreateWindowRenderState(const IPlatformWindow* Window);
 
 	SRenderContext* GetRenderContext();
+
+	void SubmitDeviceWorkHelper();
 
 private:
 	SModule* m_LoadedModule{};
 
 protected:
 	SRenderDevice* m_RenderDevice{};
-	SRenderContext* m_RenderContext;
+	SRenderContext* m_RenderContext{};
 
 	virtual void InitRenderContext_Impl() {}
 };

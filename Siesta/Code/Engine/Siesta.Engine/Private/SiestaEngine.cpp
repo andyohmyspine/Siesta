@@ -3,6 +3,7 @@
 #include "Interfaces/SiestaRenderAPI.h"
 
 #include "SiestaEngine.gen.cpp"
+#include "Interfaces/SiestaRenderContext.h"
 
 DEFINE_OBJECT_CONSTRUCTOR(SEngine) 
 {
@@ -25,6 +26,21 @@ void SEngine::BeginMainLoop()
 	while (!m_Platform->ShouldExit())
 	{
 		m_Platform->Process();
+
+		// Rendering happens here only if RC is valid
+		if(SRenderContext* RC = m_RenderAPI->GetRenderContext())
+		{
+			RC->BeginRendering();
+			// Setup window to render to
+			RC->BeginDrawingToWindow(m_MainWindowRender.get());
+
+
+
+			RC->EndDrawingToWindow();
+			RC->EndRendering();
+
+			m_RenderAPI->SubmitDeviceWorkHelper();
+		}
 
 		m_MainWindowRender->Present();
 	}

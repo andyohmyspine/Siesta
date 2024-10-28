@@ -77,6 +77,16 @@ PSharedPtr<SSwapChain> SD3D12RenderDevice::CreateSwapChain(const IPlatformWindow
 	return MakeShared<SD3D12SwapChain>(this, PlatformWindow);
 }
 
+ID3D12CommandAllocator* SD3D12RenderDevice::GetComandAllocatorForCurrentFrameInFlight() const
+{
+	return m_FrameCommandAllocators.at(GCurrentFrameInFlight).Get();
+}
+
+ID3D12GraphicsCommandList* SD3D12RenderDevice::GetGraphicsCommandList() const
+{
+	return m_GraphicsCommandList.Get();
+}
+
 void SD3D12RenderDevice::InitCommandBlock()
 {
 	// Create command allocators

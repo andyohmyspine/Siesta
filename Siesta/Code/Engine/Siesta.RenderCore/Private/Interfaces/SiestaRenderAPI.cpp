@@ -1,6 +1,7 @@
 #include "Interfaces/SiestaRenderAPI.h"
 #include "SiestaRenderAPI.gen.cpp"
 #include "WindowRenderState.h"
+#include "Interfaces/SiestaRenderDevice.h"
 
 SRenderAPI* SRenderAPI::Instance;
 
@@ -27,6 +28,11 @@ SRenderAPI* SRenderAPI::GetOrLoad(TStringView Name /*= DEFAULT_RENDER_API*/)
 	return Instance;
 }
 
+SRenderAPI::~SRenderAPI()
+{
+	delete m_RenderContext;
+}
+
 PSharedPtr<SWindowRenderState> SRenderAPI::CreateWindowRenderState(const IPlatformWindow* Window)
 {
 	// TODO: Cache the state.
@@ -41,4 +47,9 @@ SRenderContext* SRenderAPI::GetRenderContext()
 	}
 
 	return m_RenderContext;
+}
+
+void SRenderAPI::SubmitDeviceWorkHelper()
+{
+	m_RenderDevice->SubmitWork_Simple();
 }

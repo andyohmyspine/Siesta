@@ -22,6 +22,9 @@ public:
 
 	virtual PSharedPtr<SSwapChain> CreateSwapChain(const IPlatformWindow* PlatformWindow) override;
 
+	ID3D12CommandAllocator* GetComandAllocatorForCurrentFrameInFlight() const;
+	ID3D12GraphicsCommandList* GetGraphicsCommandList() const;
+
 private:
 	void InitCommandBlock();
 

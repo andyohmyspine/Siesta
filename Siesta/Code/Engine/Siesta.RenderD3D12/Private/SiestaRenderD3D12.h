@@ -5,6 +5,7 @@
 #include "D3D12RenderContext.h"
 
 #include "SiestaRenderD3D12.gen.h"
+#include "D3D12DescriptorHeap.h"
 
 expose_object()
 class SIESTA_RENDERD3D12_API SD3D12RenderAPI : public SRenderAPI
@@ -15,4 +16,7 @@ public:
 	~SD3D12RenderAPI();
 
 	virtual void InitRenderContext_Impl() override;
+
+private:
+	PSharedPtr<SD3D12DescriptorHeap> m_RTVDescriptorHeap;
 };

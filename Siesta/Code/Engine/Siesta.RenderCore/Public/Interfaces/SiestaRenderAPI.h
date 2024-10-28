@@ -6,6 +6,8 @@
 #include "SiestaRenderAPI.gen.h"
 
 class SRenderDevice;
+class SWindowRenderState;
+class IPlatformWindow;
 
 #ifdef WIN32
 #define DEFAULT_RENDER_API "SD3D12RenderAPI"
@@ -24,6 +26,9 @@ public:
 	virtual ~SRenderAPI() = default;
 
 	static SRenderAPI* Load(TStringView Name = DEFAULT_RENDER_API);
+
+	inline SRenderDevice* GetDevice() const { return m_RenderDevice; }
+	PSharedPtr<SWindowRenderState> CreateWindowRenderState(const IPlatformWindow* Window);
 
 private:
 	SModule* m_LoadedModule{};

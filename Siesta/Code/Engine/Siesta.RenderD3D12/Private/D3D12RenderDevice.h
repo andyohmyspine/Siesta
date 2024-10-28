@@ -6,19 +6,29 @@
 class SD3D12RenderDevice : public SRenderDevice
 {
 public:
+	using DeviceType = ID3D12Device5;
+	using FactoryType = IDXGIFactory6;
+	using AdapterType = IDXGIAdapter4;
+
 	SD3D12RenderDevice();
 	~SD3D12RenderDevice();
 
 	virtual void FlushCommandQueue() override;
 	virtual void SubmitWork_Simple() override;
 
+	inline FactoryType* GetDXGIFactory() const { return m_Factory.Get(); }
+	inline DeviceType* GetDevice() const { return m_Device.Get(); }
+	inline ID3D12CommandQueue* GetDirectCommandQueue() const { return m_DirectCommandQueue.Get(); }
+
+	virtual PSharedPtr<SSwapChain> CreateSwapChain(const IPlatformWindow* PlatformWindow) override;
+
 private:
 	void InitCommandBlock();
 
 private:
-	PCom<IDXGIFactory6> m_Factory;
-	PCom<IDXGIAdapter4> m_Adapter;
-	PCom<ID3D12Device5> m_Device;
+	PCom<FactoryType> m_Factory;
+	PCom<AdapterType> m_Adapter;
+	PCom<DeviceType> m_Device;
 
 	PCom<ID3D12CommandQueue> m_DirectCommandQueue;
 	PCom<ID3D12GraphicsCommandList> m_GraphicsCommandList;

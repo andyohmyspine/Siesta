@@ -2,6 +2,9 @@
 
 #include "SiestaCore.h"
 #include "Siesta.RenderCoreAPI.h"
+#include "Interfaces/SiestaSwapChain.h"
+
+class IPlatformWindow;
 
 class SIESTA_RENDERCORE_API SRenderDevice
 {
@@ -10,6 +13,8 @@ public:
 
 	virtual void FlushCommandQueue() = 0;
 	virtual void SubmitWork_Simple() = 0;
+
+	virtual PSharedPtr<SSwapChain> CreateSwapChain(const IPlatformWindow* PlatformWindow) = 0;
 
 protected:
 	SRenderDevice() = default;

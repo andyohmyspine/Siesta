@@ -12,6 +12,8 @@
 inline constexpr uint8 SIESTA_NUM_FRAMES_IN_FLIGHT = 3;
 extern uint8 GCurrentFrameInFlight;
 
+inline constexpr uint8 SIESTA_SWAP_CHAIN_BUFFER_COUNT = 3;
+
 inline void NextFrameInFlight()
 {
 	GCurrentFrameInFlight = (GCurrentFrameInFlight + 1) % SIESTA_NUM_FRAMES_IN_FLIGHT;

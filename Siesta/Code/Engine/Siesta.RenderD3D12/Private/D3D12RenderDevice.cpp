@@ -1,10 +1,24 @@
 #include "D3D12RenderDevice.h"
 #include <cstdlib>
+#include "D3D12SwapChain.h"
 
 SD3D12RenderDevice::SD3D12RenderDevice()
 {
+#ifndef NDEBUG
+	PCom<ID3D12Debug> DebugInterface;
+	ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&DebugInterface)));
+	if (DebugInterface)
+	{
+		DebugInterface->EnableDebugLayer();
+	}
+
+	UINT DXGIFlags = DXGI_CREATE_FACTORY_DEBUG;
+#else
+	UINT DXGIFlags = 0;
+#endif
+
 	// Create DXGI factory
-	ThrowIfFailed(CreateDXGIFactory2(0, IID_PPV_ARGS(&m_Factory)));
+	ThrowIfFailed(CreateDXGIFactory2(DXGIFlags, IID_PPV_ARGS(&m_Factory)));
 
 	// Pick adapter
 	ThrowIfFailed(m_Factory->EnumAdapterByGpuPreference(0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&m_Adapter)));
@@ -54,8 +68,13 @@ void SD3D12RenderDevice::FlushCommandQueue()
 
 void SD3D12RenderDevice::SubmitWork_Simple()
 {
-	ID3D12CommandList* CmdLists[] = {m_GraphicsCommandList.Get()};
+	ID3D12CommandList* CmdLists[] = { m_GraphicsCommandList.Get() };
 	m_DirectCommandQueue->ExecuteCommandLists(_countof(CmdLists), CmdLists);
+}
+
+PSharedPtr<SSwapChain> SD3D12RenderDevice::CreateSwapChain(const IPlatformWindow* PlatformWindow)
+{
+	return MakeShared<SD3D12SwapChain>(this, PlatformWindow);
 }
 
 void SD3D12RenderDevice::InitCommandBlock()

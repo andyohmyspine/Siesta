@@ -2,6 +2,7 @@
 
 #include "Siesta.EngineAPI.h"
 #include "Object.h"
+#include "WindowRenderState.h"
 
 #include "SiestaEngine.gen.h"
 
@@ -24,8 +25,9 @@ private:
 	IPlatformInterface* m_Platform{};
 	IPlatformWindow* m_MainWindow{};
 
-	expose_field()
 	SRenderAPI* m_RenderAPI;
+
+	PSharedPtr<SWindowRenderState> m_MainWindowRender;
 };
 
 SIESTA_ENGINE_API SEngine* CreateEngine(TStringView EngineTypeName = "SEngine");

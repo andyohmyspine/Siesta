@@ -10,6 +10,7 @@ DEFINE_OBJECT_CONSTRUCTOR(SEngine)
 	m_MainWindow = m_Platform->CreatePlatformWindow(1280, 720, "SiestaEngine");
 
 	m_RenderAPI = SRenderAPI::Load();
+	m_MainWindowRender = m_RenderAPI->CreateWindowRenderState(m_MainWindow);
 }
 
 SEngine::~SEngine()
@@ -24,6 +25,8 @@ void SEngine::BeginMainLoop()
 	while (!m_Platform->ShouldExit())
 	{
 		m_Platform->Process();
+
+		m_MainWindowRender->Present();
 	}
 }
 

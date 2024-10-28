@@ -2,5 +2,6 @@ add_subdirectory(Siesta.Core)
 add_subdirectory(Siesta.PlatformCommon)
 add_subdirectory(Siesta.Object)
 add_subdirectory(Siesta.Config)
+add_subdirectory(Siesta.Math)
 
 add_subdirectory(Siesta.CoreAll)

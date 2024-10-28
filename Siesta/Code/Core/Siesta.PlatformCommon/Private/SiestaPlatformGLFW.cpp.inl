@@ -2,6 +2,13 @@
 
 #include <GLFW/glfw3.h>
 
+#ifdef WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+#else
+#error "Unknown platfor"
+#endif
+
 SPlatformGLFW::SPlatformGLFW()
 {
 	if (!glfwInit())
@@ -62,6 +69,11 @@ DWindowBounds SWindowGLFW::GetWindowBounds() const
 
 void* SWindowGLFW::GetNativeHandle() const
 {
-	return m_Window;
+#ifdef WIN32
+	return glfwGetWin32Window(m_Window);
+#else
+	#error "Unknown platform."
+	return nullptr;
+#endif
 }
 

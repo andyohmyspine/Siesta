@@ -5,4 +5,5 @@ target_link_libraries(Siesta.CoreAll
         Siesta.Config
         Siesta.Core
         Siesta.Object
-        Siesta.PlatformCommon )
+        Siesta.PlatformCommon
+        Siesta.Math)

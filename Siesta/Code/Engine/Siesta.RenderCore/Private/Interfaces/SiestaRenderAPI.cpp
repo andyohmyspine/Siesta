@@ -1,5 +1,6 @@
 #include "Interfaces/SiestaRenderAPI.h"
 #include "SiestaRenderAPI.gen.cpp"
+#include "WindowRenderState.h"
 
 DEFINE_OBJECT_CONSTRUCTOR(SRenderAPI)
 { }
@@ -16,4 +17,10 @@ SRenderAPI* SRenderAPI::Load(TStringView Name /*= DEFAULT_RENDER_API*/)
 	}
 
 	return CreateObject<SRenderAPI>("RenderAPI", STypeRegistry::GetType(TString(Name)));
+}
+
+PSharedPtr<SWindowRenderState> SRenderAPI::CreateWindowRenderState(const IPlatformWindow* Window)
+{
+	// TODO: Cache the state.
+	return MakeShared<SWindowRenderState>(this, Window);
 }

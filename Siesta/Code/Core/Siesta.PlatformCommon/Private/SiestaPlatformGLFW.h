@@ -8,9 +8,8 @@ extern "C" typedef struct GLFWwindow GLFWwindow;
 class SWindowGLFW : public IPlatformWindow
 {
 public:
-	virtual DWindowBounds GetWindowBounds() const override;
 	virtual void* GetNativeHandle() const override;
-
+	virtual Math::XMINT2 GetWindowSize() const override;
 
 private:
 	GLFWwindow* m_Window{};

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SiestaCore.h"
+#include "CoreAll.h"
 
 #include <directx/d3d12.h>
 #include <directx/d3dx12.h>
@@ -24,7 +24,14 @@ inline void ThrowIfFailed(HRESULT Result)
 	if (FAILED(Result))
 	{
 		_com_error Error(Result);
-		Debug::Critical("HRESULT failed with error message: {}", Result);
+#ifndef UNICODE
+		Debug::Critical("HRESULT failed with error message: {}", Error.ErrorMessage());
+#else
+		char* MessageBuffer = new char[1024];
+		wcstombs(MessageBuffer, Error.ErrorMessage(), 1024);
+		Debug::Critical("HRESULT failed with error message: {}", MessageBuffer);
+#endif
+
 	}
 }
 

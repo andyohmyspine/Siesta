@@ -17,7 +17,7 @@ private:
 class SIESTA_CORE_API SModuleManager
 {
 public:
-	static SModule* Load(const TString& ModulePath);
+	static SModule* GetOrLoad(const TString& ModulePath);
 
 private:
 	static PHashMap<TString, PUniquePtr<SModule>> m_Modules;

@@ -14,3 +14,8 @@ SD3D12RenderAPI::~SD3D12RenderAPI()
 {
 	delete m_RenderDevice;
 }
+
+void SD3D12RenderAPI::InitRenderContext_Impl()
+{
+	m_RenderContext = CreateObject<SD3D12RenderContext>("RenderContext", this);
+}

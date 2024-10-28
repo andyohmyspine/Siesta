@@ -7,7 +7,7 @@ SModule::SModule(const TString& ModulePath)
 {
 }
 
-SModule* SModuleManager::Load(const TString& ModulePath)
+SModule* SModuleManager::GetOrLoad(const TString& ModulePath)
 {
 	if (!m_Modules.contains(ModulePath))
 	{

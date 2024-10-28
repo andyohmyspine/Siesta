@@ -31,6 +31,7 @@ private:
 	PCom<DeviceType> m_Device;
 
 	PCom<ID3D12CommandQueue> m_DirectCommandQueue;
+
 	PCom<ID3D12GraphicsCommandList> m_GraphicsCommandList;
 	PArray<PCom<ID3D12CommandAllocator>, SIESTA_NUM_FRAMES_IN_FLIGHT> m_FrameCommandAllocators;
 

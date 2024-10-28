@@ -2,6 +2,7 @@
 
 #include "Interfaces/SiestaRenderAPI.h"
 #include "Siesta.RenderD3D12API.h"
+#include "D3D12RenderContext.h"
 
 #include "SiestaRenderD3D12.gen.h"
 
@@ -12,4 +13,6 @@ class SIESTA_RENDERD3D12_API SD3D12RenderAPI : public SRenderAPI
 public:
 	DECLARE_OBJECT_CONSTRUCTOR(SD3D12RenderAPI);
 	~SD3D12RenderAPI();
+
+	virtual void InitRenderContext_Impl() override;
 };

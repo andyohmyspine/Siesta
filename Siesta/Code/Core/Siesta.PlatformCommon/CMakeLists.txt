@@ -4,8 +4,7 @@ target_link_libraries(
 Siesta.PlatformCommon
 PUBLIC    
     Siesta.Core
-    Siesta.Config
-    Siesta.Math)
+    Siesta.Config)
 
 if(WIN32 OR UNIX)
     target_compile_definitions(Siesta.PlatformCommon PRIVATE SIESTA_USE_GLFW)

@@ -2,25 +2,43 @@
 #include "SiestaRenderAPI.gen.cpp"
 #include "WindowRenderState.h"
 
+SRenderAPI* SRenderAPI::Instance;
+
 DEFINE_OBJECT_CONSTRUCTOR(SRenderAPI)
 { }
 
-SRenderAPI* SRenderAPI::Load(TStringView Name /*= DEFAULT_RENDER_API*/)
+SRenderAPI* SRenderAPI::GetOrLoad(TStringView Name /*= DEFAULT_RENDER_API*/)
 {
+	if (Instance)
+	{
+		return Instance;
+	}
+
 	if (Name == DEFAULT_RENDER_API)
 	{
-		SModuleManager::Load(DEFAULT_RENDER_API_MODULE);
+		SModuleManager::GetOrLoad(DEFAULT_RENDER_API_MODULE);
 	}
 	else
 	{
 		Debug::Critical("Loading arbitrary render APIs is currently unsupported.");
 	}
 
-	return CreateObject<SRenderAPI>("RenderAPI", STypeRegistry::GetType(TString(Name)));
+	Instance = CreateObject<SRenderAPI>("RenderAPI", STypeRegistry::GetType(TString(Name)));
+	return Instance;
 }
 
 PSharedPtr<SWindowRenderState> SRenderAPI::CreateWindowRenderState(const IPlatformWindow* Window)
 {
 	// TODO: Cache the state.
 	return MakeShared<SWindowRenderState>(this, Window);
+}
+
+SRenderContext* SRenderAPI::GetRenderContext()
+{
+	if (!m_RenderContext)
+	{
+		InitRenderContext_Impl();
+	}
+
+	return m_RenderContext;
 }

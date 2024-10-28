@@ -1,0 +1,2 @@
+add_library(NonWindowsSal INTERFACE)
+target_include_directories(NonWindowsSal PUBLIC ${CMAKE_CURRENT_LIST_DIR})

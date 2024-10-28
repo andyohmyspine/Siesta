@@ -1,5 +1,5 @@
 if(MSVC)
-    add_compile_options(/MP)
+    add_compile_options(/MP /fp:fast)
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries)

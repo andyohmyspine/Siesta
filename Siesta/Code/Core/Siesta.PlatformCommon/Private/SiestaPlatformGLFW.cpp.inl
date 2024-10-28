@@ -60,7 +60,7 @@ void SPlatformGLFW::Process()
 	glfwPollEvents();
 }
 
-DWindowBounds SWindowGLFW::GetWindowBounds() const
+Math::XMINT2 SWindowGLFW::GetWindowSize() const
 {
 	int32 Width, Height;
 	glfwGetFramebufferSize(m_Window, &Width, &Height);

@@ -9,7 +9,7 @@ DEFINE_OBJECT_CONSTRUCTOR(SEngine)
 	m_Platform = IPlatformInterface::Create();
 	m_MainWindow = m_Platform->CreatePlatformWindow(1280, 720, "SiestaEngine");
 
-	m_RenderAPI = SRenderAPI::Load();
+	m_RenderAPI = SRenderAPI::GetOrLoad();
 	m_MainWindowRender = m_RenderAPI->CreateWindowRenderState(m_MainWindow);
 }
 

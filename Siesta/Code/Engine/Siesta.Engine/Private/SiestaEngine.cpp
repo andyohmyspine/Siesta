@@ -16,6 +16,7 @@ DEFINE_OBJECT_CONSTRUCTOR(SEngine)
 
 SEngine::~SEngine()
 {
+	m_MainWindowRender.reset();
 	delete m_RenderAPI;
 	delete m_MainWindow;
 	delete m_Platform;
@@ -32,7 +33,7 @@ void SEngine::BeginMainLoop()
 		{
 			RC->BeginRendering();
 			// Setup window to render to
-			RC->BeginDrawingToWindow(m_MainWindowRender.get());
+			RC->BeginDrawingToWindow(m_MainWindowRender.get(), Math::Colors::Black);
 
 
 

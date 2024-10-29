@@ -29,8 +29,8 @@ DParsedFolderData SFolderParser::GenerateFolderInfo()
 		TString FileContents = FileSS.str();
 
 		// 2. Scan file for classes and structs
-		PVector<DFileWord> Words = SplitFileIntoWords(FileContents);
-		PVector<DToken> Tokens = TokenizeFile(FilePath.stem().string(), Words);
+		PDynArray<DFileWord> Words = SplitFileIntoWords(FileContents);
+		PDynArray<DToken> Tokens = TokenizeFile(FilePath.stem().string(), Words);
 		ParseTokens(Tokens);
 	}
 
@@ -39,10 +39,10 @@ DParsedFolderData SFolderParser::GenerateFolderInfo()
 	return m_OutData;
 }
 
-PVector<DFileWord> SFolderParser::SplitFileIntoWords(const TString& FileContents)
+PDynArray<DFileWord> SFolderParser::SplitFileIntoWords(const TString& FileContents)
 {
 	TString Token;
-	PVector<DFileWord> Words;
+	PDynArray<DFileWord> Words;
 
 	// A way to skip comments
 	bool OneLineCommentStarted = false;
@@ -148,7 +148,7 @@ PVector<DFileWord> SFolderParser::SplitFileIntoWords(const TString& FileContents
 	return Words;
 }
 
-PVector<DToken> SFolderParser::TokenizeFile(const TString& FileName, const PVector<DFileWord>& Words)
+PDynArray<DToken> SFolderParser::TokenizeFile(const TString& FileName, const PDynArray<DFileWord>& Words)
 {
 	static const PHashMap<TString, ETokenType> SpecialSymbolTokens
 	{
@@ -181,7 +181,7 @@ PVector<DToken> SFolderParser::TokenizeFile(const TString& FileName, const PVect
 
 	};
 
-	PVector<DToken> OutTokens;
+	PDynArray<DToken> OutTokens;
 	int32 LineIndex = 0;
 	int32 LastPreprocessorLineIndex = 0;
 	bool BeganPreprocessor = false;
@@ -227,11 +227,11 @@ PVector<DToken> SFolderParser::TokenizeFile(const TString& FileName, const PVect
 struct DTypeInfo
 {
 	TString Type = {};
-	PVector<TString> TypeParams = {};
+	PDynArray<TString> TypeParams = {};
 	uint16 DecoratorMask = {};
 };
 
-static DTypeInfo ParseTypeInfo(PVector<DToken>::const_iterator& Iter, PVector<DToken>::const_iterator EndIter)
+static DTypeInfo ParseTypeInfo(PDynArray<DToken>::const_iterator& Iter, PDynArray<DToken>::const_iterator EndIter)
 {
 	auto _is_end = [&] { return Iter == EndIter; };
 	auto _advance = [&] { ++Iter; return !_is_end(); };
@@ -296,7 +296,7 @@ static DTypeInfo ParseTypeInfo(PVector<DToken>::const_iterator& Iter, PVector<DT
 	return TypeInfo;
 }
 
-static DParsedVariableInfo ParseVariableInfo(PVector<DToken>::const_iterator& Iter, PVector<DToken>::const_iterator EndIter)
+static DParsedVariableInfo ParseVariableInfo(PDynArray<DToken>::const_iterator& Iter, PDynArray<DToken>::const_iterator EndIter)
 {
 	auto _is_end = [&] { return Iter == EndIter; };
 	auto _advance = [&] { ++Iter; return !_is_end(); };
@@ -338,9 +338,9 @@ static DParsedVariableInfo ParseVariableInfo(PVector<DToken>::const_iterator& It
 	return FieldInfo;
 }
 
-static PVector<TString> ParseMetadataSpecifiers(PVector<DToken>::const_iterator& Iter, PVector<DToken>::const_iterator EndIter)
+static PDynArray<TString> ParseMetadataSpecifiers(PDynArray<DToken>::const_iterator& Iter, PDynArray<DToken>::const_iterator EndIter)
 {
-	PVector<TString> Out;
+	PDynArray<TString> Out;
 
 	auto _is_end = [&] { return Iter == EndIter; };
 	auto _advance = [&] { ++Iter; return !_is_end(); };
@@ -371,7 +371,7 @@ static PVector<TString> ParseMetadataSpecifiers(PVector<DToken>::const_iterator&
 	return Out;
 }
 
-void SFolderParser::ParseTokens(const PVector<DToken>& Tokens)
+void SFolderParser::ParseTokens(const PDynArray<DToken>& Tokens)
 {
 	if (Tokens.empty())
 		return;

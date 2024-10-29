@@ -113,11 +113,11 @@ static void GenerateTypeFields(const DParsedTypeInfo& TypeInfo, TStringStream& S
 	}
 }
 
-PVector<DSourceText> SSourceGenerator::GenerateSources()
+PDynArray<DSourceText> SSourceGenerator::GenerateSources()
 {
-	PVector<DSourceText> Output;
+	PDynArray<DSourceText> Output;
 
-	PHashMap<TString, PVector<DParsedTypeInfo>> FileToTypeMap;
+	PHashMap<TString, PDynArray<DParsedTypeInfo>> FileToTypeMap;
 
 	for (const auto& Type : m_FolderData.Types)
 	{

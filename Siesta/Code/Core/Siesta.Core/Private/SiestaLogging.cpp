@@ -20,7 +20,7 @@ PSharedPtr<TLogger> SLogManager::GetLogger()
 void SLogManager::CreateLogger()
 {
 	// Sinks
-	PVector<TLogSinkPtr> Sinks
+	PDynArray<TLogSinkPtr> Sinks
 	{
 		MakeShared<spdlog::sinks::stdout_color_sink_mt>(),
 		MakeShared<spdlog::sinks::basic_file_sink_mt>("Logs/Log.txt"),

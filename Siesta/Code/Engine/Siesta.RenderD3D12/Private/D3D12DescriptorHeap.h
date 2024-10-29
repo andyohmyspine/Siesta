@@ -26,11 +26,11 @@ class SRenderAPI;
 
 struct DDescriptorHeapAllocation
 {
-	CD3DX12_CPU_DESCRIPTOR_HANDLE CPUHandle;
-	CD3DX12_GPU_DESCRIPTOR_HANDLE GPUHandle;
-	uint32 NumDescriptorsAllocated;
-	uint32 DescriptorIncrementSize;
-	bool ShaderVisible;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE CPUHandle{};
+	CD3DX12_GPU_DESCRIPTOR_HANDLE GPUHandle{};
+	uint32 NumDescriptorsAllocated{};
+	uint32 DescriptorIncrementSize{};
+	bool ShaderVisible{};
 
 	inline CD3DX12_CPU_DESCRIPTOR_HANDLE GetCPUHandleAt(uint32 Index) const
 	{
@@ -44,6 +44,16 @@ struct DDescriptorHeapAllocation
 		auto OutHandle = GPUHandle;
 		OutHandle.Offset(Index, DescriptorIncrementSize);
 		return OutHandle;
+	}
+
+	inline bool IsValid() const 
+	{
+		return NumDescriptorsAllocated > 0;
+	}
+
+	inline operator bool() const
+	{
+		return IsValid();
 	}
 };
 

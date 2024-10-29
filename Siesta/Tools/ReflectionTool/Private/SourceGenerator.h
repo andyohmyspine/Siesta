@@ -11,7 +11,7 @@ class SSourceGenerator
 {
 public:
 	SSourceGenerator(const DParsedFolderData& FolderData);
-	PVector<DSourceText> GenerateSources();
+	PDynArray<DSourceText> GenerateSources();
 
 private:
 	DParsedFolderData m_FolderData;

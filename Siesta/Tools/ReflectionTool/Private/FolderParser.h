@@ -20,10 +20,10 @@ struct DParsedVariableInfo
 	TString Name;
 	TString Type;
 	uint16 DecoratorMask;
-	PVector<TString> TypeParams;
+	PDynArray<TString> TypeParams;
 	TString DefaultValue;
 	TString MemberOf;
-	PVector<TString> MetaSpecifiers;
+	PDynArray<TString> MetaSpecifiers;
 };
 
 struct DParsedMethodInfo
@@ -32,11 +32,11 @@ struct DParsedMethodInfo
 	TString ReturnType;
 	uint16 ReturnDecoratorMask;
 	uint16 MethodDecoratorMask;
-	PVector<TString> ReturnTypeParams;
-	PVector<DParsedVariableInfo> Parameters;
+	PDynArray<TString> ReturnTypeParams;
+	PDynArray<DParsedVariableInfo> Parameters;
 	TString DefaultValue;
 	TString MemberOf;
-	PVector<TString> MetaSpecifiers;
+	PDynArray<TString> MetaSpecifiers;
 };
 
 enum class EParsedTypeSpecifier
@@ -53,16 +53,16 @@ struct DParsedTypeInfo
 	TString File;
 	EParsedTypeSpecifier TypeSpecifier;
 	int32 GeneratedBodyLine;
-	PVector<TString> MetaSpecifiers;
-	PVector<DParsedVariableInfo> Fields;
-	PVector<DParsedMethodInfo> Methods;
+	PDynArray<TString> MetaSpecifiers;
+	PDynArray<DParsedVariableInfo> Fields;
+	PDynArray<DParsedMethodInfo> Methods;
 };
 
 struct DParsedFolderData
 {
 	bool ContainsReflection{};
 	TString FolderPath{};
-	PVector<DParsedTypeInfo> Types{};
+	PDynArray<DParsedTypeInfo> Types{};
 };
 
 template<typename T>
@@ -169,9 +169,9 @@ public:
 	DParsedFolderData GenerateFolderInfo();
 
 private:
-	PVector<DFileWord> SplitFileIntoWords(const TString& FileContents);
-	PVector<DToken> TokenizeFile(const TString& FileName, const PVector<DFileWord>& Words);
-	void ParseTokens(const PVector<DToken>& Tokens);
+	PDynArray<DFileWord> SplitFileIntoWords(const TString& FileContents);
+	PDynArray<DToken> TokenizeFile(const TString& FileName, const PDynArray<DFileWord>& Words);
+	void ParseTokens(const PDynArray<DToken>& Tokens);
 
 private:
 	TPath m_FolderPath;

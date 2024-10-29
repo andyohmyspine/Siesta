@@ -2,7 +2,7 @@
 
 SReflectedTypeDatabase* SReflectedTypeDatabase::Instance;
 
-SReflectedTypeDatabase::SReflectedTypeDatabase(const PVector<DParsedTypeInfo>& ParsedTypes)
+SReflectedTypeDatabase::SReflectedTypeDatabase(const PDynArray<DParsedTypeInfo>& ParsedTypes)
 {
 	Instance = this;
 

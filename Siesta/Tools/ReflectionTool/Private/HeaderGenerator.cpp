@@ -6,10 +6,10 @@ SHeaderGenerator::SHeaderGenerator(const DParsedFolderData& FolderData)
 {
 }
 
-PVector<DHeaderText> SHeaderGenerator::GenerateHeaders() const
+PDynArray<DHeaderText> SHeaderGenerator::GenerateHeaders() const
 {
-	PVector<DHeaderText> Output;
-	PHashMap<TString, PVector<DParsedTypeInfo>> FileToTypeMap;
+	PDynArray<DHeaderText> Output;
+	PHashMap<TString, PDynArray<DParsedTypeInfo>> FileToTypeMap;
 
 	for (const auto& Type : m_FolderData.Types)
 	{

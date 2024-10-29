@@ -12,7 +12,7 @@ class SHeaderGenerator
 public:
 	SHeaderGenerator(const DParsedFolderData& FolderData);
 
-	PVector<DHeaderText> GenerateHeaders() const;
+	PDynArray<DHeaderText> GenerateHeaders() const;
 
 private:
 	const DParsedFolderData& m_FolderData;

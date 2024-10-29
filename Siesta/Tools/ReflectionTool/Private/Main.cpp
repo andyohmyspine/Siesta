@@ -13,9 +13,9 @@
 #include "HeaderGenerator.h"
 #include "SourceGenerator.h"
 
-inline static PVector<TString> SplitFilePaths(const TString& String)
+inline static PDynArray<TString> SplitFilePaths(const TString& String)
 {
-	PVector<TString> Output;
+	PDynArray<TString> Output;
 
 	TStringStream SS(String);
 
@@ -48,7 +48,7 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 
 	const auto BeginTimePoint = std::chrono::high_resolution_clock::now();
 
-	PVector<TString> ProjectPaths;
+	PDynArray<TString> ProjectPaths;
 	if (ArgCount > 1)
 	{
 		ProjectPaths.push_back(ArgValues[1]);
@@ -89,7 +89,7 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 	}
 
 	// Create type database
-	PVector<DParsedTypeInfo> Types;
+	PDynArray<DParsedTypeInfo> Types;
 	for (const DParsedFolderData& FolderData : ParsedFolderDatas)
 	{
 		if (FolderData.ContainsReflection)
@@ -112,7 +112,7 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 				[&]
 				{
 					SHeaderGenerator HeaderGenerator(FolderData);
-					PVector<DHeaderText> Headers = HeaderGenerator.GenerateHeaders();
+					PDynArray<DHeaderText> Headers = HeaderGenerator.GenerateHeaders();
 
 					for (const DHeaderText& Header : Headers)
 					{
@@ -124,7 +124,7 @@ int32 main(int32 ArgCount, char* const* ArgValues)
 				[&]
 				{
 					SSourceGenerator SourceGenerator(FolderData);
-					PVector<DSourceText> Sources = SourceGenerator.GenerateSources();
+					PDynArray<DSourceText> Sources = SourceGenerator.GenerateSources();
 
 					for (const DSourceText& Source : Sources)
 					{

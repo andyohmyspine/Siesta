@@ -9,7 +9,7 @@ void SRenderContext::EndRendering()
 {
 }
 
-void SRenderContext::BeginDrawingToWindow(SWindowRenderState* Window)
+void SRenderContext::BeginDrawingToWindow(SWindowRenderState* Window, TColor ClearColor)
 {
 	m_CurrentWindow = Window;
 }

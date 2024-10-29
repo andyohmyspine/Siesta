@@ -65,7 +65,7 @@ template<typename T>
 using PDefAllocator = std::allocator<T>;
 
 template<typename T, typename Alloc = PDefAllocator<T>>
-using PVector = std::vector<T, Alloc>;
+using PDynArray = std::vector<T, Alloc>;
 
 #include <array>
 template<typename T, uint64 Size>
@@ -130,6 +130,11 @@ inline constexpr auto MakeVariantFromValuesHelper(auto... Values)
 {
 	return PVariant<TMonostate, decltype(Values)...>();
 }
+
+#include <functional>
+
+template<typename TRv>
+using PFunction = std::function<TRv>;
 
 #define SIESTA_MAKE_VARIANT_TYPE_FROM_VALUES(Name, ...) using Name = decltype(MakeVariantFromValuesHelper(__VA_ARGS__))
 #define SIESTA_MAKE_TUPLE_TYPE_FROM_VALUES(Name, ...) using Name = decltype(std::make_tuple(__VA_ARGS__))

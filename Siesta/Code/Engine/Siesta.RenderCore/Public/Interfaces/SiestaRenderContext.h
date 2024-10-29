@@ -21,8 +21,10 @@ public:
 	virtual void BeginRendering();
 	virtual void EndRendering();
 
-	virtual void BeginDrawingToWindow(SWindowRenderState* Window);
+	virtual void BeginDrawingToWindow(SWindowRenderState* Window, TColor ClearColor);
 	virtual void EndDrawingToWindow();
+
+	inline SWindowRenderState* GetCurrentWindow() const { return m_CurrentWindow; }
 
 private:
 	/**

@@ -11,7 +11,7 @@ class SReflectedTypeDatabase
 
 public:
 	static SReflectedTypeDatabase& Get() { return *Instance; }
-	SReflectedTypeDatabase(const PVector<DParsedTypeInfo>& ParsedTypes);
+	SReflectedTypeDatabase(const PDynArray<DParsedTypeInfo>& ParsedTypes);
 
 	inline const DParsedTypeInfo* TryGetType(const TString& Name) const 
 	{

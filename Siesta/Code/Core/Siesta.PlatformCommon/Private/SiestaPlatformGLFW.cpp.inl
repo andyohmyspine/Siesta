@@ -3,10 +3,10 @@
 #include <GLFW/glfw3.h>
 
 #ifdef WIN32
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
+	#define GLFW_EXPOSE_NATIVE_WIN32
+	#include <GLFW/glfw3native.h>
 #else
-#error "Unknown platfor"
+	#error "Unknown platform"
 #endif
 
 SPlatformGLFW::SPlatformGLFW()
@@ -46,9 +46,15 @@ IPlatformWindow* SPlatformGLFW::CreatePlatformWindow(int32 Width, int32 Height, 
 
 	SWindowGLFW* Out = new SWindowGLFW;
 	Out->m_Window = OutWindow;
+	glfwSetWindowUserPointer(OutWindow, Out);
+
+	glfwSetFramebufferSizeCallback(OutWindow, [](GLFWwindow* Window, int32 Width, int32 Height) {
+		SWindowGLFW* SWindow = (SWindowGLFW*)glfwGetWindowUserPointer(Window);
+		IPlatformInterface::Get().OnWindowResizedCallback.Invoke(SWindow, Width, Height);
+	});
+
 	return Out;
 }
-
 
 bool SPlatformGLFW::ShouldExit() const
 {
@@ -76,4 +82,3 @@ void* SWindowGLFW::GetNativeHandle() const
 	return nullptr;
 #endif
 }
-

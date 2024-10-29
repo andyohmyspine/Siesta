@@ -11,12 +11,18 @@ expose_object()
 class SIESTA_RENDERD3D12_API SD3D12RenderAPI : public SRenderAPI
 {
 	generated_code()
+
 public:
 	DECLARE_OBJECT_CONSTRUCTOR(SD3D12RenderAPI);
 	~SD3D12RenderAPI();
 
 	virtual void InitRenderContext_Impl() override;
 
+	inline PSharedPtr<SD3D12DescriptorPool> GetRTVDescriptorPool() const
+	{
+		return m_RTVDescriptorHeap;
+	}
+
 private:
-	PSharedPtr<SD3D12DescriptorHeap> m_RTVDescriptorHeap;
+	PSharedPtr<SD3D12DescriptorPool> m_RTVDescriptorHeap;
 };

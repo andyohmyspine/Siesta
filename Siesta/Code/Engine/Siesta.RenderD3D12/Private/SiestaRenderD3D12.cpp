@@ -9,7 +9,7 @@ DEFINE_OBJECT_CONSTRUCTOR(SD3D12RenderAPI)
 {
 	m_RenderDevice = new SD3D12RenderDevice();
 
-	m_RTVDescriptorHeap = MakeShared<SD3D12DescriptorHeap>(this, EDescriptorHeapType::RenderTarget, 1024, false);
+	m_RTVDescriptorHeap = MakeShared<SD3D12DescriptorPool>(this, EDescriptorHeapType::RenderTarget, 1024, false);
 }
 
 SD3D12RenderAPI::~SD3D12RenderAPI()

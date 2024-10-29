@@ -2,6 +2,7 @@
 #include "D3D12RenderDevice.h"
 
 #include "Interfaces/IPlatformWindow.h"
+#include "SiestaRenderD3D12.h"
 
 SD3D12SwapChain::SD3D12SwapChain(SD3D12RenderDevice* Parent, const IPlatformWindow* Window)
 	: m_Parent(Parent)
@@ -34,6 +35,8 @@ SD3D12SwapChain::SD3D12SwapChain(SD3D12RenderDevice* Parent, const IPlatformWind
 
 		ThrowIfFailed(SwapChain.As(&m_SwapChain));
 	}
+
+	AllocateDescriptors();
 }
 
 void SD3D12SwapChain::Present()
@@ -56,5 +59,25 @@ EPixelFormat SD3D12SwapChain::GetBackBufferPixelFormat() const
 uint32 SD3D12SwapChain::GetCurrentBackBufferIndex() const
 {
 	return m_CurrentBackBufferIndex;
+}
+
+void SD3D12SwapChain::AllocateDescriptors()
+{
+	if (SD3D12RenderAPI* RAPI = SD3D12RenderAPI::GetOrLoad<SD3D12RenderAPI>())
+	{
+		if (auto DescriptorPool = RAPI->GetRTVDescriptorPool())
+		{
+			m_Descriptors = DescriptorPool->AllocateDescriptors(SIESTA_SWAP_CHAIN_BUFFER_COUNT);
+			for (uint8 Index = 0; Index < SIESTA_SWAP_CHAIN_BUFFER_COUNT; ++Index)
+			{
+				PCom<ID3D12Resource> Buffer;
+				ThrowIfFailed(m_SwapChain->GetBuffer(Index, IID_PPV_ARGS(&Buffer)));
+				if (SD3D12RenderDevice::DeviceType* Device = m_Parent->GetDevice())
+				{
+					Device->CreateRenderTargetView(Buffer.Get(), nullptr, m_Descriptors.GetCPUHandleAt(Index));
+				}
+			}
+		}
+	}
 }
 

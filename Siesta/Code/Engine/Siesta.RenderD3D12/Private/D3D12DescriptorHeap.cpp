@@ -1,5 +1,5 @@
 #include "D3D12DescriptorHeap.h"
-#include "SiestaRenderD3D12.h"
+#include "D3D12RenderAPI.h"
 #include "D3D12RenderDevice.h"
 
 SD3D12DescriptorHeap::SD3D12DescriptorHeap(SRenderAPI* RenderAPI, EDescriptorHeapType Type, uint32 NumDescriptors, bool ShaderVisible)

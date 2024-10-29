@@ -34,9 +34,9 @@ void SEngine::BeginMainLoop()
 			RC->BeginRendering();
 			// Setup window to render to
 			RC->BeginDrawingToWindow(m_MainWindowRender.get(), Math::Colors::Black);
-
-
-
+			{
+				
+			}
 			RC->EndDrawingToWindow();
 			RC->EndRendering();
 
@@ -44,6 +44,7 @@ void SEngine::BeginMainLoop()
 		}
 
 		m_MainWindowRender->Present();
+		m_RenderAPI->OnFrameFinished();
 	}
 }
 

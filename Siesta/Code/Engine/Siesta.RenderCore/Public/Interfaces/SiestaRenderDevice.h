@@ -16,6 +16,8 @@ public:
 
 	virtual PSharedPtr<SSwapChain> CreateSwapChain(const IPlatformWindow* PlatformWindow) = 0;
 
+	virtual void SyncFrameInFlight() = 0;
+
 protected:
 	SRenderDevice() = default;
 

@@ -43,6 +43,8 @@ public:
 
 	void SubmitDeviceWorkHelper();
 
+	virtual void OnFrameFinished() = 0;
+
 private:
 	SModule* m_LoadedModule{};
 

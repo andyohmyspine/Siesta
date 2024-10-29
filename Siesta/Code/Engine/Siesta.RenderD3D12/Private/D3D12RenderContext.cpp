@@ -1,7 +1,7 @@
 #include "D3D12RenderContext.h"
 #include "D3D12RenderContext.gen.cpp"
 #include "Interfaces/SiestaRenderAPI.h"
-#include "SiestaRenderD3D12.h"
+#include "D3D12RenderAPI.h"
 #include "D3D12RenderDevice.h"
 #include "D3D12SwapChain.h"
 #include "WindowRenderState.h"
@@ -18,6 +18,18 @@ void SD3D12RenderContext::BeginRendering()
 
 	if (SD3D12RenderDevice* Device = static_cast<SD3D12RenderDevice*>(m_RenderAPI->GetDevice()))
 	{
+		if (Device->GetFrameFenceValue() != 0 && Device->GetFence()->GetCompletedValue() < Device->GetFrameFenceValue())
+		{
+			// Wait for fence
+			HANDLE EventHandle = CreateEventEx(nullptr, nullptr, 0, EVENT_ALL_ACCESS);
+			if (EventHandle)
+			{
+				ThrowIfFailed(Device->GetFence()->SetEventOnCompletion(Device->GetFrameFenceValue(), EventHandle));
+				WaitForSingleObject(EventHandle, INFINITE);
+				CloseHandle(EventHandle);
+			}
+		}
+
 		ID3D12CommandAllocator* CA = Device->GetComandAllocatorForCurrentFrameInFlight();
 		ThrowIfFailed(CA->Reset());
 
@@ -45,7 +57,7 @@ void SD3D12RenderContext::BeginDrawingToWindow(SWindowRenderState* Window, TColo
 		ID3D12Resource* BackBuffer = SwapChain->GetCurrentBackBufferResource();
 		TransitionSingleResource(BackBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-		m_GraphicsCommandList->ClearRenderTargetView(SwapChain->GetCurrentBackBufferView(), DirectX::Colors::Blue, 0, nullptr);
+		m_GraphicsCommandList->ClearRenderTargetView(SwapChain->GetCurrentBackBufferView(), ClearColor, 0, nullptr);
 
 		// Set viewport
 		Math::XMINT2 WindowSize = Window->GetAssociatedWindow()->GetWindowSize();

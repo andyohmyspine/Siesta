@@ -1,7 +1,7 @@
-#include "SiestaRenderD3D12.h"
+#include "D3D12RenderAPI.h"
 #include "D3D12RenderDevice.h"
 
-#include "SiestaRenderD3D12.gen.cpp"
+#include "D3D12RenderAPI.gen.cpp"
 
 uint8 GCurrentFrameInFlight = 0;
 
@@ -20,4 +20,10 @@ SD3D12RenderAPI::~SD3D12RenderAPI()
 void SD3D12RenderAPI::InitRenderContext_Impl()
 {
 	m_RenderContext = CreateObject<SD3D12RenderContext>("RenderContext", this);
+}
+
+void SD3D12RenderAPI::OnFrameFinished()
+{
+	NextFrameInFlight();
+	m_RenderDevice->SyncFrameInFlight();
 }

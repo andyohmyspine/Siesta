@@ -87,6 +87,12 @@ ID3D12GraphicsCommandList* SD3D12RenderDevice::GetGraphicsCommandList() const
 	return m_GraphicsCommandList.Get();
 }
 
+void SD3D12RenderDevice::SyncFrameInFlight()
+{
+	m_FrameFenceValues[GCurrentFrameInFlight] = ++m_FenceValue;
+	ThrowIfFailed(m_DirectCommandQueue->Signal(m_Fence.Get(), m_FenceValue));
+}
+
 void SD3D12RenderDevice::InitCommandBlock()
 {
 	// Create command allocators

@@ -2,7 +2,7 @@
 #include "D3D12RenderDevice.h"
 
 #include "Interfaces/IPlatformWindow.h"
-#include "SiestaRenderD3D12.h"
+#include "D3D12RenderAPI.h"
 #include "Interfaces/IPlatform.h"
 
 SD3D12SwapChain::SD3D12SwapChain(SD3D12RenderDevice* Parent, const IPlatformWindow* Window)
@@ -42,6 +42,10 @@ SD3D12SwapChain::SD3D12SwapChain(SD3D12RenderDevice* Parent, const IPlatformWind
 
 SD3D12SwapChain::~SD3D12SwapChain()
 {
+	if (m_Parent)
+	{
+		m_Parent->FlushCommandQueue();
+	}
 	IPlatformInterface::Get().OnWindowResizedCallback.Unbind(this);
 }
 
@@ -54,10 +58,10 @@ void SD3D12SwapChain::Present()
 	}
 
 	// TODO: Remove when frame resources done.
-	m_Parent->FlushCommandQueue();
 
 	if (m_WaitingForResize)
 	{
+		m_Parent->FlushCommandQueue();
 		Resize();
 	}
 }
@@ -116,6 +120,7 @@ void SD3D12SwapChain::Resize()
 	AllocateDescriptors();
 	m_WaitingForResize = false;
 
+	// Flip to current swap chain image, because it should be the one that the command list is writing to.
 	while (m_SwapChain->GetCurrentBackBufferIndex() != m_CurrentBackBufferIndex)
 	{
 		ThrowIfFailed(m_SwapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING));

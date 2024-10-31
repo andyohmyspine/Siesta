@@ -56,6 +56,11 @@ IPlatformWindow* SPlatformGLFW::CreatePlatformWindow(int32 Width, int32 Height, 
 	return Out;
 }
 
+IPlatformWindow* SPlatformGLFW::GetMainWindow() const
+{
+	return (IPlatformWindow*)glfwGetWindowUserPointer(m_FirstWindow);
+}
+
 bool SPlatformGLFW::ShouldExit() const
 {
 	return glfwWindowShouldClose(m_FirstWindow);

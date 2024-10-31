@@ -23,6 +23,8 @@ public:
 
 	DOnWindowResized OnWindowResizedCallback;
 
+	virtual IPlatformWindow* GetMainWindow() const = 0;
+
 protected:
 	IPlatformInterface();
 };

@@ -3,8 +3,9 @@ Siesta_CreateSharedModule(Siesta.Engine)
 target_link_libraries(Siesta.Engine 
 PUBLIC 
 	Siesta.CoreAll
-	Siesta.RenderCore
+
 PRIVATE
+	Siesta.Renderer
 )
 
 if(WIN32)

@@ -1,23 +1,24 @@
 #include "SiestaEngine.h"
 #include "Interfaces/IPlatform.h"
-#include "Interfaces/SiestaRenderAPI.h"
+#include "SiestaRenderer.h"
 
 #include "SiestaEngine.gen.cpp"
-#include "Interfaces/SiestaRenderContext.h"
 
 DEFINE_OBJECT_CONSTRUCTOR(SEngine) 
 {
 	m_Platform = IPlatformInterface::Create();
 	m_MainWindow = m_Platform->CreatePlatformWindow(1280, 720, "SiestaEngine");
 
-	m_RenderAPI = SRenderAPI::GetOrLoad();
-	m_MainWindowRender = m_RenderAPI->CreateWindowRenderState(m_MainWindow);
+	// Create renderer
+	// Load renderer module
+	SModuleManager::GetOrLoad("Siesta.Renderer");
+
+	m_Renderer = CreateObject<SRenderer>("Renderer", STypeRegistry::GetType(TString(RendererClassName)));
 }
 
 SEngine::~SEngine()
 {
-	m_MainWindowRender.reset();
-	delete m_RenderAPI;
+	delete m_Renderer;
 	delete m_MainWindow;
 	delete m_Platform;
 }
@@ -28,23 +29,10 @@ void SEngine::BeginMainLoop()
 	{
 		m_Platform->Process();
 
-		// Rendering happens here only if RC is valid
-		if(SRenderContext* RC = m_RenderAPI->GetRenderContext())
+		if (m_Renderer)
 		{
-			RC->BeginRendering();
-			// Setup window to render to
-			RC->BeginDrawingToWindow(m_MainWindowRender.get(), Math::Colors::Black);
-			{
-				
-			}
-			RC->EndDrawingToWindow();
-			RC->EndRendering();
-
-			m_RenderAPI->SubmitDeviceWorkHelper();
+			m_Renderer->Render();
 		}
-
-		m_MainWindowRender->Present();
-		m_RenderAPI->OnFrameFinished();
 	}
 }
 

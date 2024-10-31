@@ -16,4 +16,3 @@ SModule* SModuleManager::GetOrLoad(const TString& ModulePath)
 
 	return m_Modules.at(ModulePath).get();
 }
-

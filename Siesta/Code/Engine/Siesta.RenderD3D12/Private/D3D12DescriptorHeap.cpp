@@ -64,3 +64,14 @@ SD3D12DescriptorPool::SD3D12DescriptorPool(SRenderAPI* RenderAPI, EDescriptorHea
 	: m_Heap(RenderAPI, Type, NumDescriptorsTotal, ShaderVisible)
 {
 }
+
+DD3D12DescriptorPartitionHandle SD3D12DescriptorPool::CreatePartition(uint32 NumDescriptors)
+{
+	return {};
+}
+
+SD3D12DescriptorPartition::SD3D12DescriptorPartition(const TString& Name, const DDescriptorHeapAllocation& Allocation)
+	: m_PartitionName(Name)
+	, m_Allocation(Allocation)
+{
+}

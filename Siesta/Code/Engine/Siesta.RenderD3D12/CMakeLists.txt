@@ -9,3 +9,5 @@ target_link_libraries(Siesta.RenderD3D12
         DirectX-Guids
         dxgi
         d3d12)
+
+Siesta_CopyDXCBinaries(Siesta.RenderD3D12)

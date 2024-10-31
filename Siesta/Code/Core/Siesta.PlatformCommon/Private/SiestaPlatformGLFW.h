@@ -26,6 +26,8 @@ public:
 	virtual bool ShouldExit() const override;
 	virtual void Process() override;
 
+	virtual IPlatformWindow* GetMainWindow() const override;
+
 private:
 	GLFWwindow* m_FirstWindow{};
 };

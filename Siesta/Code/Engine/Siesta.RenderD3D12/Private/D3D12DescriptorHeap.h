@@ -3,6 +3,10 @@
 #include "CoreAll.h"
 #include "D3D12Common.h"
 
+/**
+ * The idea with descriptor heaps is that they need to be split into separate partitions
+ */
+
 enum class EDescriptorHeapType
 {
 	RenderTarget,
@@ -89,6 +93,20 @@ protected:
 	uint32 m_NumDescriptorsAllocated{};
 };
 
+enum class DD3D12DescriptorPartitionHandle : uint32
+{
+};
+
+class SD3D12DescriptorPartition
+{
+public:
+	SD3D12DescriptorPartition(const TString& Name, const DDescriptorHeapAllocation& Allocation);
+
+private:
+	TString m_PartitionName;
+	DDescriptorHeapAllocation m_Allocation;
+};
+
 /**
  * Descriptor pool is a higher-level abstraction around the DescriptorHeap.
  * It allows for subdivision of the descriptor heap (e.g. to sort descriptors by frequency of use)
@@ -103,6 +121,10 @@ public:
 		return m_Heap.AllocateDescriptors(NumDescriptors);
 	}
 
+	DD3D12DescriptorPartitionHandle CreatePartition(uint32 NumDescriptors);
+
 private:
 	SD3D12DescriptorHeap m_Heap;
+
+	PDynArray<PUniquePtr<SD3D12DescriptorPartition>> m_Partitions;
 };

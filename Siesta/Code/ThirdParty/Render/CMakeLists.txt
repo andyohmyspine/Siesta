@@ -4,4 +4,6 @@ if(WIN32)
     if(MSVC)
         set_target_properties(DirectX-Headers DirectX-Guids PROPERTIES FOLDER Siesta/ThirdParty/Render)
     endif()
+
+    add_subdirectory(DXC)
 endif()

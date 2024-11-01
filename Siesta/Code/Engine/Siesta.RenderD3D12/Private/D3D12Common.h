@@ -11,6 +11,7 @@
 
 inline constexpr uint8 SIESTA_NUM_FRAMES_IN_FLIGHT = 3;
 extern uint8 GCurrentFrameInFlight;
+extern uint64 GCurrentFrameIndex;
 
 inline constexpr uint8 SIESTA_SWAP_CHAIN_BUFFER_COUNT = 3;
 
@@ -22,6 +23,11 @@ inline void AdvanceFrameInFlight()
 inline uint8 GetNextFrameInFlightIndex()
 {
 	return (GCurrentFrameInFlight + 1) % SIESTA_NUM_FRAMES_IN_FLIGHT;
+}
+
+inline uint64 GetNextFrameIndex() 
+{
+	return GCurrentFrameIndex + 1;
 }
 
 inline void ThrowIfFailed(HRESULT Result)
@@ -36,7 +42,6 @@ inline void ThrowIfFailed(HRESULT Result)
 		wcstombs(MessageBuffer, Error.ErrorMessage(), 1024);
 		Debug::Critical("HRESULT failed with error message: {}", MessageBuffer);
 #endif
-
 	}
 }
 

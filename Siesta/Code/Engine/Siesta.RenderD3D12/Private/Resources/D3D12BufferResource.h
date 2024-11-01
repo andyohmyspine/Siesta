@@ -22,11 +22,23 @@ public:
 
 	inline ID3D12Resource* GetResource() const { return m_Allocation.Resource.Get(); }
 
+	void SetUsableOnFrame(uint64 FrameIndex);
+
+	inline bool IsUsable() const
+	{
+		if (m_Desc.Mutability != EGPUBufferMutability::Static)
+			return true;
+
+		return !IsCPUMemoryDirty() || (m_UsableOnFrame == UINT64_MAX || GCurrentFrameIndex >= m_UsableOnFrame);
+	}
+
 private:
 	DD3D12ResourceAllocation m_Allocation;
+	uint64 m_UsableOnFrame = UINT64_MAX;
 
 	SCPUBlob* m_CPUData;
 	void* m_MappedResourceData;
 
 	bool m_IsAwaitingGPUTransfer:1 = false;
+	friend class SD3D12RenderContext;
 };

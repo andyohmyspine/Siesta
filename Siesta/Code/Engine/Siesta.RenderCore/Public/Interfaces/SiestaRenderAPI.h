@@ -39,6 +39,9 @@ public:
 	inline SRenderDevice* GetDevice() const { return m_RenderDevice; }
 	PSharedPtr<SWindowRenderState> CreateWindowRenderState(const IPlatformWindow* Window);
 
+	template<typename T>
+	inline T* GetDevice() const { return static_cast<T*>(m_RenderDevice); }
+
 	SRenderContext* GetRenderContext();
 
 	void SubmitDeviceWorkHelper();

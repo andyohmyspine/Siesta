@@ -6,6 +6,7 @@
 #include "D3D12SwapChain.h"
 #include "WindowRenderState.h"
 #include "Interfaces/IPlatformWindow.h"
+#include "Resources/D3D12BufferResource.h"
 
 DEFINE_OBJECT_CONSTRUCTOR(SD3D12RenderContext)
 {
@@ -32,11 +33,15 @@ void SD3D12RenderContext::BeginRendering()
 
 		ID3D12CommandAllocator* CA = Device->GetComandAllocatorForCurrentFrameInFlight();
 		ThrowIfFailed(CA->Reset());
-
 		m_GraphicsCommandList = Device->GetGraphicsCommandList();
 		if (m_GraphicsCommandList)
 		{
 			ThrowIfFailed(m_GraphicsCommandList->Reset(CA, nullptr));
+
+			if (auto Device = m_RenderAPI->GetDevice<SD3D12RenderDevice>())
+			{
+				Device->FlushPendingTransfers(m_GraphicsCommandList);
+			}
 		}
 	}
 }
@@ -61,8 +66,7 @@ void SD3D12RenderContext::BeginDrawingToWindow(SWindowRenderState* Window, TColo
 
 		// Set viewport
 		Math::XMINT2 WindowSize = Window->GetAssociatedWindow()->GetWindowSize();
-		D3D12_VIEWPORT Viewport = 
-		{
+		D3D12_VIEWPORT Viewport = {
 			.TopLeftX = 0,
 			.TopLeftY = 0,
 			.Width = (FLOAT)WindowSize.x,
@@ -73,8 +77,7 @@ void SD3D12RenderContext::BeginDrawingToWindow(SWindowRenderState* Window, TColo
 
 		m_GraphicsCommandList->RSSetViewports(1, &Viewport);
 
-		D3D12_RECT Scissor =
-		{
+		D3D12_RECT Scissor = {
 			.left = 0,
 			.top = 0,
 			.right = WindowSize.x,
@@ -100,4 +103,25 @@ void SD3D12RenderContext::TransitionSingleResource(ID3D12Resource* Resource, D3D
 {
 	auto Barrier = CD3DX12_RESOURCE_BARRIER::Transition(Resource, From, To, SubResource);
 	m_GraphicsCommandList->ResourceBarrier(1, &Barrier);
+}
+
+bool SD3D12RenderContext::ValidateBufferUsability(SGPUBufferResource* Buffer) const
+{
+	if (SD3D12BufferResource* B = static_cast<SD3D12BufferResource*>(Buffer))
+	{
+		if (B->IsUsable())
+			return true;
+
+		if (B->IsCPUMemoryDirty())
+		{
+			if (B->IsCPUMemoryDirty() && B->m_UsableOnFrame <= GCurrentFrameIndex)
+			{
+				B->m_UsableOnFrame = UINT64_MAX;
+				B->MarkCPUMemoryDirty(false);
+			}
+		}
+		return B->IsUsable();
+	}
+
+	return false;
 }

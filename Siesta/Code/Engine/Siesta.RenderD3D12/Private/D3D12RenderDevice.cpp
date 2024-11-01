@@ -74,8 +74,6 @@ void SD3D12RenderDevice::FlushCommandQueue()
 
 void SD3D12RenderDevice::SubmitWork_Simple()
 {
-	FlushPendingTransfers();
-
 	ID3D12CommandList* CmdLists[] = { m_GraphicsCommandList.Get() };
 	m_DirectCommandQueue->ExecuteCommandLists(_countof(CmdLists), CmdLists);
 }
@@ -149,7 +147,7 @@ void SD3D12RenderDevice::InitCommandBlock()
 	ThrowIfFailed(m_Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_FrameCommandAllocators.at(0).Get(), nullptr, IID_PPV_ARGS(&m_GraphicsCommandList)));
 }
 
-void SD3D12RenderDevice::FlushPendingTransfers()
+void SD3D12RenderDevice::FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd)
 {
 	static PDynArray<D3D12_RESOURCE_BARRIER> TransferBarriers;
 
@@ -167,13 +165,13 @@ void SD3D12RenderDevice::FlushPendingTransfers()
 
 	if (!TransferBarriers.empty())
 	{
-		m_GraphicsCommandList->ResourceBarrier((UINT)TransferBarriers.size(), TransferBarriers.data());
+		Cmd->ResourceBarrier((UINT)TransferBarriers.size(), TransferBarriers.data());
 		TransferBarriers.clear();
 	}
 
-	for (const auto& Transfer : m_PendingBufferTransfers[GCurrentFrameInFlight])
+	for (auto& Transfer : m_PendingBufferTransfers[GCurrentFrameInFlight])
 	{
-		m_GraphicsCommandList->CopyBufferRegion(
+		Cmd->CopyBufferRegion(
 			Transfer.DstResource->GetResource(),
 			0,
 			Transfer.InternalSrcResource->GetResource(),
@@ -182,15 +180,17 @@ void SD3D12RenderDevice::FlushPendingTransfers()
 
 		TransferBarriers.push_back(
 			CD3DX12_RESOURCE_BARRIER::Transition(Transfer.DstResource->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, Transfer.FinalState));
+
+		Transfer.DstResource->SetUsableOnFrame(GCurrentFrameIndex + SIESTA_NUM_FRAMES_IN_FLIGHT);
 	}
 
 	if (!TransferBarriers.empty())
 	{
-		m_GraphicsCommandList->ResourceBarrier((UINT)TransferBarriers.size(), TransferBarriers.data());
+		Cmd->ResourceBarrier((UINT)TransferBarriers.size(), TransferBarriers.data());
 		TransferBarriers.clear();
 	}
 
-	// TODO: Need a way to notify buffer, that it was completed.
+	// TODO: Need a way to notify buffer, that it was completetd
 }
 
 void EnqueueBufferTransfer(DPendingBufferTransfer Transfer)

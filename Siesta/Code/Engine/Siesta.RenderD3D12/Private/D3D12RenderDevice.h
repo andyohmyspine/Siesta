@@ -49,10 +49,10 @@ public:
 
 	void AddPendingBufferTransfer(DPendingBufferTransfer NewTransfer);
 	void ClearPendingTransfers();
+	void FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd);
 
 private:
 	void InitCommandBlock();
-	void FlushPendingTransfers();
 
 private:
 	PCom<FactoryType> m_Factory;

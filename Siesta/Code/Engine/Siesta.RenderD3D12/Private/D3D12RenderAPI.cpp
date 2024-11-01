@@ -4,6 +4,7 @@
 #include "D3D12RenderAPI.gen.cpp"
 
 uint8 GCurrentFrameInFlight = 0;
+uint64 GCurrentFrameIndex = 0;
 
 DEFINE_OBJECT_CONSTRUCTOR(SD3D12RenderAPI)
 {
@@ -26,4 +27,6 @@ void SD3D12RenderAPI::OnFrameFinished()
 {
 	AdvanceFrameInFlight();
 	m_RenderDevice->SyncFrameInFlight();
+
+	GCurrentFrameIndex++;
 }

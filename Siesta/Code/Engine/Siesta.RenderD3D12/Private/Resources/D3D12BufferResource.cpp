@@ -44,3 +44,8 @@ void SD3D12BufferResource::WriteData(const void* Data, uint64 DataSize, uint64 B
 		}
 	}
 }
+
+void SD3D12BufferResource::SetUsableOnFrame(uint64 FrameIndex)
+{
+	m_UsableOnFrame = FrameIndex;
+}

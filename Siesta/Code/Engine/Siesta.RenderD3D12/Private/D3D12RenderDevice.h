@@ -2,6 +2,20 @@
 
 #include "D3D12Common.h"
 #include "Interfaces/SiestaRenderDevice.h"
+#include "D3D12ResourceAllocator.h"
+
+class SD3D12BufferResource;
+
+struct DPendingBufferTransfer
+{
+	D3D12_RESOURCE_STATES InitialState;
+	D3D12_RESOURCE_STATES FinalState;
+	SD3D12BufferResource* DstResource;
+
+private:
+	SD3D12BufferResource* InternalSrcResource;
+	friend class SD3D12RenderDevice;
+};
 
 class SD3D12RenderDevice : public SRenderDevice
 {
@@ -31,8 +45,14 @@ public:
 	inline auto GetFenceValue() const { return m_FenceValue; }
 	inline auto GetFrameFenceValue() const { return m_FrameFenceValues[GCurrentFrameInFlight]; }
 
+	virtual SGPUBufferResource* CreateBufferResource(const DGPUBufferDesc& Desc) override;
+
+	void AddPendingBufferTransfer(DPendingBufferTransfer NewTransfer);
+	void ClearPendingTransfers();
+
 private:
 	void InitCommandBlock();
+	void FlushPendingTransfers();
 
 private:
 	PCom<FactoryType> m_Factory;
@@ -47,4 +67,10 @@ private:
 
 	PCom<ID3D12Fence> m_Fence;
 	uint64 m_FenceValue{};
+
+	PSharedPtr<SD3D12ResourceAllocator> m_ResourceAllocator;
+
+	PArray<PDynArray<DPendingBufferTransfer>, SIESTA_NUM_FRAMES_IN_FLIGHT> m_PendingBufferTransfers;
 };
+
+void EnqueueBufferTransfer(DPendingBufferTransfer Transfer);

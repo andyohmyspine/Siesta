@@ -3,6 +3,7 @@
 #include "SiestaCore.h"
 #include "Siesta.RenderCoreAPI.h"
 #include "Interfaces/SiestaSwapChain.h"
+#include "Resources/GPUBufferResource.h"
 
 class IPlatformWindow;
 
@@ -17,6 +18,8 @@ public:
 	virtual PSharedPtr<SSwapChain> CreateSwapChain(const IPlatformWindow* PlatformWindow) = 0;
 
 	virtual void SyncFrameInFlight() = 0;
+
+	virtual SGPUBufferResource* CreateBufferResource(const DGPUBufferDesc& Desc) = 0;
 
 protected:
 	SRenderDevice() = default;

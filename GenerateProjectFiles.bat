@@ -1,1 +1,2 @@
-cmake . -B.DevFiles
+@echo off
+python ./Siesta/Scripts/Python/GenerateProjectFiles.py

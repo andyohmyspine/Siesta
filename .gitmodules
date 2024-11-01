@@ -19,3 +19,6 @@
 [submodule "Siesta/Code/ThirdParty/Core/DirectXMath"]
 	path = Siesta/Code/ThirdParty/Core/DirectXMath
 	url = https://github.com/microsoft/DirectXMath
+[submodule "Siesta/Code/ThirdParty/Render/D3D12MemoryAllocator"]
+	path = Siesta/Code/ThirdParty/Render/D3D12MemoryAllocator
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator.git

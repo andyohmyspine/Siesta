@@ -3,12 +3,30 @@
 #include "D3D12Common.h"
 #include "Resources/GPUBufferResource.h"
 #include "Siesta.RenderD3D12API.h"
+#include "D3D12ResourceAllocator.h"
+
+class SCPUBlob;
 
 class SIESTA_RENDERD3D12_API SD3D12BufferResource : public SGPUBufferResource
 {
 public:
-	SD3D12BufferResource(const TString& Name);
+	SD3D12BufferResource(const DGPUBufferDesc& Desc);
+
+	virtual void WriteData(const void* Data, uint64 DataSize, uint64 ByteOffset) override;
+	inline bool IsCPUMemoryDirty() const { return m_IsAwaitingGPUTransfer; }
+
+	inline void MarkCPUMemoryDirty(bool Dirty)
+	{
+		m_IsAwaitingGPUTransfer = Dirty;
+	}
+
+	inline ID3D12Resource* GetResource() const { return m_Allocation.Resource.Get(); }
 
 private:
-	PCom<ID3D12Resource> m_Resource;
+	DD3D12ResourceAllocation m_Allocation;
+
+	SCPUBlob* m_CPUData;
+	void* m_MappedResourceData;
+
+	bool m_IsAwaitingGPUTransfer:1 = false;
 };

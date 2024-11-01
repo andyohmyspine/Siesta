@@ -24,6 +24,6 @@ void SD3D12RenderAPI::InitRenderContext_Impl()
 
 void SD3D12RenderAPI::OnFrameFinished()
 {
-	NextFrameInFlight();
+	AdvanceFrameInFlight();
 	m_RenderDevice->SyncFrameInFlight();
 }

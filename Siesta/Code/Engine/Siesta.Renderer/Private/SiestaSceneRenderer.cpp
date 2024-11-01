@@ -3,17 +3,31 @@
 #include "Interfaces/SiestaRenderContext.h"
 #include "Interfaces/SiestaRenderAPI.h"
 
-#include "SiestaSceneRenderer.gen.cpp"
 #include "WindowRenderState.h"
+
+#include "BufferUtils.h"
+
+#include "SiestaSceneRenderer.gen.cpp"
 
 DEFINE_OBJECT_CONSTRUCTOR(SSceneRenderer)
 {
+	DGPUBufferDesc BufferDesc{
+		.DebugName = "TestBuffer",
+		.ByteSize = 1024,
+		.ByteStride = 1024,
+		.Mutability = EGPUBufferMutability::Static,
+		.Usage = BU_Vertex,
+	};
 
+	m_TestBuffer = BufferUtils::CreateBufferResource(BufferDesc);
+	char data[1024] = {};
+
+	m_TestBuffer->WriteData(data, 1024, 0);
 }
 
 SSceneRenderer::~SSceneRenderer()
 {
-
+	m_TestBuffer->Release();
 }
 
 void SSceneRenderer::Render()

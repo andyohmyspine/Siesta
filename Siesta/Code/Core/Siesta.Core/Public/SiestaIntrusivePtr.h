@@ -5,7 +5,7 @@
 
 #include <atomic>
 
-class SIntrusiveRefCounted
+class SIESTA_CORE_API SIntrusiveRefCounted
 {
 public:
 	SIntrusiveRefCounted() = default;

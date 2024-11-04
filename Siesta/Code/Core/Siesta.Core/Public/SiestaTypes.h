@@ -160,7 +160,7 @@ SIESTA_SIMPLE_TYPE_CONVERTER(int64);
 SIESTA_SIMPLE_TYPE_CONVERTER(float);
 SIESTA_SIMPLE_TYPE_CONVERTER(double);
 
-#define match_enum(x) [x] { using _internal_It = decltype(x); switch(x) 
+#define match_enum(x) [&, x] { using _internal_It = decltype(x); switch(x) 
 #define match_case(x) case _internal_It::x: 
 #define match_default() throw TRuntimeError("Unknown switch case.")
 #define end_match throw TRuntimeError("Unknown match case."); }()

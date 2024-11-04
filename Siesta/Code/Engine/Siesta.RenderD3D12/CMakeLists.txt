@@ -10,5 +10,3 @@ target_link_libraries(Siesta.RenderD3D12
         dxgi
         d3d12
         D3D12MemoryAllocator)
-
-Siesta_CopyDXCBinaries(Siesta.RenderD3D12)

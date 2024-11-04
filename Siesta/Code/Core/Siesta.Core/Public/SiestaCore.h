@@ -9,6 +9,7 @@
 #include "SiestaModuleManager.h"
 #include "Math/DMath.h"
 #include "SiestaDelegate.h"
+#include "SiestaIntrusivePtr.h"
 
 template<typename ... Args>
 inline constexpr TString FormatString(fmt::format_string<Args...> Format, Args&&... InArgs)

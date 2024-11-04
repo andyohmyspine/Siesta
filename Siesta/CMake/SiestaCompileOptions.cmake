@@ -5,4 +5,5 @@ macro(Siesta_AddCompileOptionWithMacro _Name _DefaultValue)
     endif()
 endmacro()
 
+Siesta_AddCompileOptionWithMacro(SIESTA_BUILD_DIST OFF)
 Siesta_AddCompileOptionWithMacro(SIESTA_ENABLE_GPU_VALIDATION OFF)

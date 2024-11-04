@@ -1,3 +1,4 @@
 .DevFiles/
+.Packaged/
 Binaries/
 __pycache__

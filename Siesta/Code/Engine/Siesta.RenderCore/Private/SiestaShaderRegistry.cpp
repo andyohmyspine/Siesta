@@ -1,4 +1,5 @@
 #include "SiestaShaderRegistry.h"
+#include "ShaderCompiler.h"
 
 SShaderRegistry& SShaderRegistry::Get()
 {

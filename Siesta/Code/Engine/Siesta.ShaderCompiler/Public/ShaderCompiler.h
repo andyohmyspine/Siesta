@@ -28,4 +28,4 @@ public:
 	virtual void ClearCompiledData(DCompiledData* Data) = 0;
 };
 
-IShaderCompiler* CreateShaderCompiler();
+SIESTA_SHADERCOMPILER_API IShaderCompiler* CreateShaderCompiler();

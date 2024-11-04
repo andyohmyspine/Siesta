@@ -25,7 +25,7 @@ SDXCShaderCompiler::SDXCShaderCompiler()
 
 DCompiledData SDXCShaderCompiler::CompileShader(const TString& Path, const TString& EntryPoint, ECompilerShaderStage::Type Stage)
 {
-	
+	return {};
 }
 
 void SDXCShaderCompiler::ClearCompiledData(DCompiledData* Data)

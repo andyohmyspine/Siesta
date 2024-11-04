@@ -49,6 +49,8 @@ public:
 
 	void AddPendingBufferTransfer(DPendingBufferTransfer NewTransfer);
 	void ClearPendingTransfers();
+	void ClearPendingTransfers_ForCurrentFrame();
+	
 	void FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd);
 
 private:
@@ -71,6 +73,7 @@ private:
 	PSharedPtr<SD3D12ResourceAllocator> m_ResourceAllocator;
 
 	PArray<PDynArray<DPendingBufferTransfer>, SIESTA_NUM_FRAMES_IN_FLIGHT> m_PendingBufferTransfers;
+	PArray<PDynArray<PDynArray<DPendingBufferTransfer>>, SIESTA_NUM_FRAMES_IN_FLIGHT> m_SubmittedBufferTransfers;
 };
 
 void EnqueueBufferTransfer(DPendingBufferTransfer Transfer);

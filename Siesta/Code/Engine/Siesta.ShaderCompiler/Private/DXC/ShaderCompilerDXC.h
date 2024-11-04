@@ -2,6 +2,7 @@
 
 #include "ShaderCompiler.h"
 
+#include <Unknwnbase.h>
 #include <dxcapi.h>
 
 #include <wrl.h>

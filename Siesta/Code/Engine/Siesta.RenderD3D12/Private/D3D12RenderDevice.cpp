@@ -135,6 +135,17 @@ void SD3D12RenderDevice::ClearPendingTransfers()
 	}
 }
 
+void SD3D12RenderDevice::ClearPendingTransfers_ForCurrentFrame()
+{
+	for (DPendingBufferTransfer& Transfer : m_PendingBufferTransfers[GCurrentFrameInFlight])
+	{
+		Transfer.DstResource->Release();
+		Transfer.InternalSrcResource->Release();
+	}
+
+	m_PendingBufferTransfers[GCurrentFrameInFlight].clear();
+}
+
 void SD3D12RenderDevice::InitCommandBlock()
 {
 	// Create command allocators
@@ -183,6 +194,11 @@ void SD3D12RenderDevice::FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd)
 
 		Transfer.DstResource->SetUsableOnFrame(GCurrentFrameIndex + SIESTA_NUM_FRAMES_IN_FLIGHT);
 	}
+	
+	if (!m_PendingBufferTransfers[GCurrentFrameInFlight].empty())
+	{
+		Debug::Info("(D3D12) Enqueued {} buffer transfers", m_PendingBufferTransfers[GCurrentFrameInFlight].size());
+	}
 
 	if (!TransferBarriers.empty())
 	{
@@ -190,8 +206,9 @@ void SD3D12RenderDevice::FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd)
 		TransferBarriers.clear();
 	}
 
-	// TODO: Need a way to notify buffer, that it was completetd
+	// TODO: Need to clear pending buffer transfers for current frame.
 }
+
 
 void EnqueueBufferTransfer(DPendingBufferTransfer Transfer)
 {

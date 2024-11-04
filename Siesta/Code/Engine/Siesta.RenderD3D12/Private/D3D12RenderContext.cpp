@@ -31,6 +31,7 @@ void SD3D12RenderContext::BeginRendering()
 			}
 		}
 
+		Device->ClearSubmittedTransfers_ForCurrentFrame();
 		ID3D12CommandAllocator* CA = Device->GetComandAllocatorForCurrentFrameInFlight();
 		ThrowIfFailed(CA->Reset());
 		m_GraphicsCommandList = Device->GetGraphicsCommandList();

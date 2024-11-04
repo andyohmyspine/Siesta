@@ -54,6 +54,7 @@ SD3D12RenderDevice::SD3D12RenderDevice()
 
 SD3D12RenderDevice::~SD3D12RenderDevice()
 {
+	ClearSubmittedTransfers();
 	ClearPendingTransfers();
 	FlushCommandQueue();
 }
@@ -162,22 +163,7 @@ void SD3D12RenderDevice::FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd)
 {
 	static PDynArray<D3D12_RESOURCE_BARRIER> TransferBarriers;
 
-	if (!m_SubmittedBufferTransfers[GCurrentFrameInFlight].empty())
-	{
-		for (auto& TransferBatch : m_SubmittedBufferTransfers[GCurrentFrameInFlight])
-		{
-			for (auto& Transfer : TransferBatch)
-			{
-				Transfer.DstResource->MarkCPUMemoryDirty(false);
-				Transfer.DstResource->Release();
-				Transfer.InternalSrcResource->Release();
-			}
-
-			TransferBatch.clear();
-		}
-
-		m_SubmittedBufferTransfers[GCurrentFrameInFlight].clear();
-	}
+	ClearSubmittedTransfers_ForCurrentFrame();
 
 	// Transition all transfer dests
 	for (auto& Transfer : m_PendingBufferTransfers[GCurrentFrameInFlight])
@@ -209,7 +195,7 @@ void SD3D12RenderDevice::FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd)
 		TransferBarriers.push_back(
 			CD3DX12_RESOURCE_BARRIER::Transition(Transfer.DstResource->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, Transfer.FinalState));
 	}
-	
+
 	if (!m_PendingBufferTransfers[GCurrentFrameInFlight].empty())
 	{
 		Debug::Info("(D3D12) Enqueued {} buffer transfers", m_PendingBufferTransfers[GCurrentFrameInFlight].size());
@@ -225,6 +211,48 @@ void SD3D12RenderDevice::FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd)
 	m_SubmittedBufferTransfers[GCurrentFrameInFlight].push_back(std::move(m_PendingBufferTransfers[GCurrentFrameInFlight]));
 }
 
+void SD3D12RenderDevice::ClearSubmittedTransfers_ForCurrentFrame()
+{
+	if (!m_SubmittedBufferTransfers[GCurrentFrameInFlight].empty())
+	{
+		for (auto& TransferBatch : m_SubmittedBufferTransfers[GCurrentFrameInFlight])
+		{
+			for (auto& Transfer : TransferBatch)
+			{
+				Transfer.DstResource->MarkCPUMemoryDirty(false);
+				Transfer.DstResource->Release();
+				Transfer.InternalSrcResource->Release();
+			}
+
+			TransferBatch.clear();
+		}
+
+		m_SubmittedBufferTransfers[GCurrentFrameInFlight].clear();
+	}
+}
+
+void SD3D12RenderDevice::ClearSubmittedTransfers()
+{
+	for (auto& Transfers : m_SubmittedBufferTransfers)
+	{
+		if (!Transfers.empty())
+		{
+			for (auto& TransferBatch : Transfers)
+			{
+				for (auto& Transfer : TransferBatch)
+				{
+					Transfer.DstResource->MarkCPUMemoryDirty(false);
+					Transfer.DstResource->Release();
+					Transfer.InternalSrcResource->Release();
+				}
+
+				TransferBatch.clear();
+			}
+
+			m_SubmittedBufferTransfers[GCurrentFrameInFlight].clear();
+		}
+	}
+}
 
 void EnqueueBufferTransfer(DPendingBufferTransfer Transfer)
 {

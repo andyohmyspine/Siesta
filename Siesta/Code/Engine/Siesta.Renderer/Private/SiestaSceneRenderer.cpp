@@ -19,9 +19,8 @@ DEFINE_OBJECT_CONSTRUCTOR(SSceneRenderer)
 		.Usage = BU_Vertex,
 	};
 
-	m_TestBuffer = BufferUtils::CreateBufferResource(BufferDesc);
 	char data[1024] = {};
-
+	m_TestBuffer = BufferUtils::CreateBufferResource(BufferDesc);
 	m_TestBuffer->WriteData(data, 1024, 0);
 }
 

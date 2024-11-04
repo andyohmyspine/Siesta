@@ -13,11 +13,11 @@ public:
 	SD3D12BufferResource(const DGPUBufferDesc& Desc);
 
 	virtual void WriteData(const void* Data, uint64 DataSize, uint64 ByteOffset) override;
-	inline bool IsCPUMemoryDirty() const { return m_IsAwaitingGPUTransfer; }
+	inline bool IsCPUMemoryDirty() const { return m_IsCPUMemoryDirty; }
 
 	inline void MarkCPUMemoryDirty(bool Dirty)
 	{
-		m_IsAwaitingGPUTransfer = Dirty;
+		m_IsCPUMemoryDirty = Dirty;
 	}
 
 	inline ID3D12Resource* GetResource() const { return m_Allocation.Resource.Get(); }
@@ -36,6 +36,6 @@ private:
 	SCPUBlob* m_CPUData;
 	void* m_MappedResourceData;
 
-	bool m_IsAwaitingGPUTransfer:1 = false;
+	bool m_IsCPUMemoryDirty:1 = false;
 	friend class SD3D12RenderContext;
 };

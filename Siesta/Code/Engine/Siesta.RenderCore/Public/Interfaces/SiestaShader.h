@@ -35,3 +35,11 @@ protected:
 
 	friend void Detail::SetShaderByteCode(SShader*, PUniquePtr<SCPUBlob>&&);
 };
+
+#define SIESTA_REGISTER_SHADER(Name, Path, Entry, Type, API) \
+	struct SIESTA_PASTE_2(Internal_ShaderRegistrar_, Name)   \
+	{                                                        \
+		SIESTA_PASTE_2(Internal_ShaderRegistrar_, Name)      \
+		{                                                    \
+		}                                                    \
+	};

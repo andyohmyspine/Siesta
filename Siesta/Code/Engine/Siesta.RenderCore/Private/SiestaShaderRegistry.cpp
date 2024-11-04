@@ -9,6 +9,7 @@ SShaderRegistry& SShaderRegistry::Get()
 SShaderRegistry::SShaderRegistry()
 #ifdef SIESTA_USE_SHADER_COMPILER
 	: m_ShaderCompilerModule(SModuleManager::GetOrLoad(SIESTA_SHADER_COMPILER_MODULE_NAME))
+	, m_ShaderCompiler(CreateShaderCompiler())
 #endif
 {
 }
@@ -50,34 +51,14 @@ SShader* SShaderRegistry::CompileShader(const TString& Path, const TString& Entr
 	Debug::Trace("Compiling shader '{}' ['{}']", Path, EntryPoint);
 
 	auto& This = Get();
-	if (!This.m_ShaderCompiler)
-	{
-		This.m_ShaderCompiler = CreateShaderCompiler();
-	}
-
 	SShader* OutShader = new SShader(Path, EntryPoint, Stage);
 	DCompiledData CompiledData = This.m_ShaderCompiler->CompileShader(Path, EntryPoint, (ECompilerShaderStage::Type)Stage);
 	{
 		PUniquePtr<SCPUBlob> Blob = WrapUnique(AllocateCPUBlob(CompiledData.Size, CompiledData.Binary));
 		Detail::SetShaderByteCode(OutShader, std::move(Blob));
+		RegisterShader(Path, Stage, OutShader);
 	}
 	This.m_ShaderCompiler->ClearCompiledData(&CompiledData);
-
-	switch (Stage)
-	{
-		case EShaderStage::VertexShader:
-			This.m_Shaders[Path].VS = OutShader;
-			break;
-		case EShaderStage::PixelShader:
-			This.m_Shaders[Path].PS = OutShader;
-			break;
-		case EShaderStage::ComputeShader:
-			This.m_Shaders[Path].CS = OutShader;
-			break;
-		default:
-			Debug::Critical("Unknown shader type");
-	}
-
 	return OutShader;
 }
 #endif

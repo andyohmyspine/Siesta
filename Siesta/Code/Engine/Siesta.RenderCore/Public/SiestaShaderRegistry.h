@@ -44,6 +44,6 @@ private:
 
 #ifdef SIESTA_USE_SHADER_COMPILER
 	SModule* m_ShaderCompilerModule {};
-	class IShaderCompiler* m_ShaderCompiler;
+	class IShaderCompiler* m_ShaderCompiler{};
 #endif
 };

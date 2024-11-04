@@ -26,10 +26,7 @@ public:
 
 	inline bool IsUsable() const
 	{
-		if (m_Desc.Mutability != EGPUBufferMutability::Static)
-			return true;
-
-		return !IsCPUMemoryDirty() || (m_UsableOnFrame == UINT64_MAX || GCurrentFrameIndex >= m_UsableOnFrame);
+		return !IsCPUMemoryDirty();
 	}
 
 private:

@@ -168,6 +168,7 @@ void SD3D12RenderDevice::FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd)
 		{
 			for (auto& Transfer : TransferBatch)
 			{
+				Transfer.DstResource->MarkCPUMemoryDirty(false);
 				Transfer.DstResource->Release();
 				Transfer.InternalSrcResource->Release();
 			}
@@ -207,8 +208,6 @@ void SD3D12RenderDevice::FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd)
 
 		TransferBarriers.push_back(
 			CD3DX12_RESOURCE_BARRIER::Transition(Transfer.DstResource->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, Transfer.FinalState));
-
-		Transfer.DstResource->SetUsableOnFrame(GCurrentFrameIndex + SIESTA_NUM_FRAMES_IN_FLIGHT);
 	}
 	
 	if (!m_PendingBufferTransfers[GCurrentFrameInFlight].empty())

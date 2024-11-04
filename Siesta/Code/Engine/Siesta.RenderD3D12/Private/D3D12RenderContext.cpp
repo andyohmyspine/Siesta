@@ -104,24 +104,3 @@ void SD3D12RenderContext::TransitionSingleResource(ID3D12Resource* Resource, D3D
 	auto Barrier = CD3DX12_RESOURCE_BARRIER::Transition(Resource, From, To, SubResource);
 	m_GraphicsCommandList->ResourceBarrier(1, &Barrier);
 }
-
-bool SD3D12RenderContext::ValidateBufferUsability(SGPUBufferResource* Buffer) const
-{
-	if (SD3D12BufferResource* B = static_cast<SD3D12BufferResource*>(Buffer))
-	{
-		if (B->IsUsable())
-			return true;
-
-		if (B->IsCPUMemoryDirty())
-		{
-			if (B->IsCPUMemoryDirty() && B->m_UsableOnFrame <= GCurrentFrameIndex)
-			{
-				B->m_UsableOnFrame = UINT64_MAX;
-				B->MarkCPUMemoryDirty(false);
-			}
-		}
-		return B->IsUsable();
-	}
-
-	return false;
-}

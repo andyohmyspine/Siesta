@@ -72,7 +72,10 @@ private:
 
 	PSharedPtr<SD3D12ResourceAllocator> m_ResourceAllocator;
 
+	// This is where pending transfers live.
 	PArray<PDynArray<DPendingBufferTransfer>, SIESTA_NUM_FRAMES_IN_FLIGHT> m_PendingBufferTransfers;
+
+	// This is where already submitted transfers live.
 	PArray<PDynArray<PDynArray<DPendingBufferTransfer>>, SIESTA_NUM_FRAMES_IN_FLIGHT> m_SubmittedBufferTransfers;
 };
 

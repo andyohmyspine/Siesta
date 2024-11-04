@@ -162,6 +162,22 @@ void SD3D12RenderDevice::FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd)
 {
 	static PDynArray<D3D12_RESOURCE_BARRIER> TransferBarriers;
 
+	if (!m_SubmittedBufferTransfers[GCurrentFrameInFlight].empty())
+	{
+		for (auto& TransferBatch : m_SubmittedBufferTransfers[GCurrentFrameInFlight])
+		{
+			for (auto& Transfer : TransferBatch)
+			{
+				Transfer.DstResource->Release();
+				Transfer.InternalSrcResource->Release();
+			}
+
+			TransferBatch.clear();
+		}
+
+		m_SubmittedBufferTransfers[GCurrentFrameInFlight].clear();
+	}
+
 	// Transition all transfer dests
 	for (auto& Transfer : m_PendingBufferTransfers[GCurrentFrameInFlight])
 	{
@@ -207,6 +223,7 @@ void SD3D12RenderDevice::FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd)
 	}
 
 	// TODO: Need to clear pending buffer transfers for current frame.
+	m_SubmittedBufferTransfers[GCurrentFrameInFlight].push_back(std::move(m_PendingBufferTransfers[GCurrentFrameInFlight]));
 }
 
 

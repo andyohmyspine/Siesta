@@ -54,7 +54,7 @@ SD3D12RenderDevice::SD3D12RenderDevice()
 
 SD3D12RenderDevice::~SD3D12RenderDevice()
 {
-	ClearSubmittedTransfers();
+	NotifyAndClearAllSubmittedTransfers();
 	ClearPendingTransfers();
 	FlushCommandQueue();
 }
@@ -163,7 +163,7 @@ void SD3D12RenderDevice::FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd)
 {
 	static PDynArray<D3D12_RESOURCE_BARRIER> TransferBarriers;
 
-	ClearSubmittedTransfers_ForCurrentFrame();
+	NotifyAndClearSubmittedTransfers_ForCurrentFrame();
 
 	// Transition all transfer dests
 	for (auto& Transfer : m_PendingBufferTransfers[GCurrentFrameInFlight])
@@ -211,7 +211,7 @@ void SD3D12RenderDevice::FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd)
 	m_SubmittedBufferTransfers[GCurrentFrameInFlight].push_back(std::move(m_PendingBufferTransfers[GCurrentFrameInFlight]));
 }
 
-void SD3D12RenderDevice::ClearSubmittedTransfers_ForCurrentFrame()
+void SD3D12RenderDevice::NotifyAndClearSubmittedTransfers_ForCurrentFrame()
 {
 	if (!m_SubmittedBufferTransfers[GCurrentFrameInFlight].empty())
 	{
@@ -231,7 +231,7 @@ void SD3D12RenderDevice::ClearSubmittedTransfers_ForCurrentFrame()
 	}
 }
 
-void SD3D12RenderDevice::ClearSubmittedTransfers()
+void SD3D12RenderDevice::NotifyAndClearAllSubmittedTransfers()
 {
 	for (auto& Transfers : m_SubmittedBufferTransfers)
 	{

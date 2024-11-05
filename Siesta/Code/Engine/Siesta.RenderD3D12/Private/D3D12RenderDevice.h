@@ -52,8 +52,8 @@ public:
 	void ClearPendingTransfers_ForCurrentFrame();
 	
 	void FlushPendingTransfers(ID3D12GraphicsCommandList* Cmd);
-	void ClearSubmittedTransfers_ForCurrentFrame();
-	void ClearSubmittedTransfers();
+	void NotifyAndClearSubmittedTransfers_ForCurrentFrame();
+	void NotifyAndClearAllSubmittedTransfers();
 
 private:
 	void InitCommandBlock();

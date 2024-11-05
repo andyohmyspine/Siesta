@@ -25,6 +25,9 @@ SDXCShaderCompiler::SDXCShaderCompiler()
 
 DCompiledData SDXCShaderCompiler::CompileShader(const TString& Path, const TString& EntryPoint, ECompilerShaderStage::Type Stage)
 {
+	// Read file from path
+
+
 	return {};
 }
 

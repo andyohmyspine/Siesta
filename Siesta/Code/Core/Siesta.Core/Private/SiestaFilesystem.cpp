@@ -1,5 +1,7 @@
 #include "SiestaFilesystem.h"
 
+#include <fstream>
+
 SPaths SPaths::Instance;
 
 SPaths::SPaths()
@@ -27,4 +29,15 @@ TStringView SPaths::GetEngineShadersPath()
 TString SPaths::MakeShaderPath(TStringView Path)
 {
 	return TString(Instance.GetEngineShadersPath()) + '/' + TString(Path);
+}
+
+/**
+ * FILE HELPERS API
+ */
+TString SFileHelpers::ReadFileToString(const TString& Path)
+{
+	std::ifstream File(Path);
+	TStringStream SS;
+	SS << File.rdbuf();
+	return SS.str();
 }

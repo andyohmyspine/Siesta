@@ -37,7 +37,7 @@ void SSceneRenderer::Render()
 		RC->BeginRendering();
 
 		// Setup window to render to
-		RC->BeginDrawingToWindow(m_MainWindowRender.get(), Math::Colors::Black);
+		RC->BeginDrawingToWindow(m_MainWindowRender.get(), Math::Colors::SlateBlue);
 		{
 			
 		}

@@ -19,6 +19,12 @@ struct DCompiledData
 {
 	void* Binary;
 	uint64 Size;
+	uint64 Hash;
+
+	inline bool IsValid() const 
+	{
+		return Binary != nullptr && Size > 0;
+	}
 };
 
 class SIESTA_SHADERCOMPILER_API IShaderCompiler

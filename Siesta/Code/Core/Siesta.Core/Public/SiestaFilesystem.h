@@ -10,6 +10,7 @@ using TRecursiveDirectoryIterator = std::filesystem::recursive_directory_iterato
 class SIESTA_CORE_API SPaths
 {
 	static SPaths Instance;
+
 public:
 	SPaths();
 
@@ -23,4 +24,10 @@ private:
 	TString m_RootPath;
 	TString m_EngineRootPath;
 	TString m_EngineShadersPath;
+};
+
+class SIESTA_CORE_API SFileHelpers
+{
+public:
+	static TString ReadFileToString(const TString& Path);
 };

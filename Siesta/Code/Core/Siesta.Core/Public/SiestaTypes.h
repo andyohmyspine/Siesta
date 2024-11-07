@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Siesta.CoreAPI.h"
+
 #include <cstdint>
 #include <concepts>
 
@@ -28,6 +30,10 @@ using TTypeOfNull = decltype(nullptr);
 using TString = std::string;
 using TStringView = std::string_view;
 using TStringStream = std::stringstream;
+
+using TWideString = std::wstring;
+using TWideStringView = std::wstring_view;
+using TWideStringStream = std::wstringstream;
 
 #include <memory>
 
@@ -164,3 +170,7 @@ SIESTA_SIMPLE_TYPE_CONVERTER(double);
 #define match_case(x) case _internal_It::x: 
 #define match_default() throw TRuntimeError("Unknown switch case.")
 #define end_match throw TRuntimeError("Unknown match case."); }()
+
+// String conversion stuff
+SIESTA_CORE_API TString WideStringToString(const TWideString& WideString);
+SIESTA_CORE_API TWideString StringToWideString(const TString& String);

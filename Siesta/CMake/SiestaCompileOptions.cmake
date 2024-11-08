@@ -5,5 +5,11 @@ macro(Siesta_AddCompileOptionWithMacro _Name _DefaultValue)
     endif()
 endmacro()
 
+Siesta_AddCompileOptionWithMacro(SIESTA_BUILD_EDITOR ON)
 Siesta_AddCompileOptionWithMacro(SIESTA_BUILD_DIST OFF)
 Siesta_AddCompileOptionWithMacro(SIESTA_ENABLE_GPU_VALIDATION OFF)
+
+if(WIN32)
+    Siesta_AddCompileOptionWithMacro(SIESTA_PLATFORM_WINDOWS ON)
+    Siesta_AddCompileOptionWithMacro(SIESTA_USE_D3D12 ON)
+endif()

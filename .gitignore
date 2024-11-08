@@ -1,4 +1,5 @@
 .DevFiles/
 .Packaged/
 Binaries/
+Legacy/
 __pycache__

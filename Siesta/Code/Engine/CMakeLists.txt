@@ -1,11 +1,11 @@
-add_subdirectory(Siesta.Engine)
-add_subdirectory(Siesta.RenderCore)
-add_subdirectory(Siesta.Renderer)
+add_subdirectory(Engine)
+add_subdirectory(RenderCore)
+add_subdirectory(Renderer)
 
 if(NOT SIESTA_BUILD_DIST)
-    add_subdirectory(Siesta.ShaderCompiler)
+    add_subdirectory(ShaderCompiler)
 endif()
 
 if(WIN32)
-    add_subdirectory(Siesta.RenderD3D12)
+    add_subdirectory(RenderD3D12)
 endif()

@@ -1,1 +1,1 @@
-add_subdirectory(Siesta.Editor)
+add_subdirectory(Editor)

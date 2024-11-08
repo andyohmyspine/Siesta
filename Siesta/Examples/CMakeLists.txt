@@ -1,1 +1,1 @@
-add_subdirectory(Siesta.Sandbox)
+add_subdirectory(Sandbox)

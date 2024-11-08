@@ -1,7 +1,7 @@
-Siesta_CreateExeModule(Siesta.ReflectionTool)
+Siesta_CreateExeModule(ReflectionTool)
 
-target_link_libraries(Siesta.ReflectionTool PRIVATE Siesta.Core)
-target_include_directories(Siesta.ReflectionTool PRIVATE ${CMAKE_SOURCE_DIR}/Siesta/Code/Core/Siesta.Object/Public)
+target_link_libraries(ReflectionTool PRIVATE Core)
+target_include_directories(ReflectionTool PRIVATE ${CMAKE_SOURCE_DIR}/Siesta/Code/Core/Object/Public)
 
 # Select all reflected targets from the Siesta codebase.
 # And add them to the reflection database
@@ -31,11 +31,11 @@ foreach(_ReflectedTarget IN LISTS Siesta_ReflectedTargets)
     get_target_property(_TargetSourceDir ${_ReflectedTarget} SOURCE_DIR)
     list(APPEND _GlobalReflectionDatabase "${_TargetSourceDir}|")
 
-    add_dependencies(${_ReflectedTarget} Siesta.ReflectionTool)
+    add_dependencies(${_ReflectedTarget} ReflectionTool)
 endforeach()
 
 string(REPLACE "\\" "/" _GlobalReflectionDatabase ${_GlobalReflectionDatabase})
-target_compile_definitions(Siesta.ReflectionTool PRIVATE 
+target_compile_definitions(ReflectionTool PRIVATE 
     SIESTA_REFLECTION_FOLDERS="${_GlobalReflectionDatabase}"
     SIESTA_REFLECTION_OUTPUT="${CMAKE_BINARY_DIR}/Generated/Sources"
     SIESTA_EXPOSE_REFLECTION_TOOL
@@ -45,9 +45,9 @@ target_compile_definitions(Siesta.ReflectionTool PRIVATE
 # NEED TO FIGURE OUT HOW TO REFLECT ONLY DEPENDEND TARGETS IF NOT BUILDING EVERYTHING
 # Solution: Args passing
 
-# add_custom_command(TARGET Siesta.ReflectionTool POST_BUILD COMMAND $<TARGET_FILE:Siesta.ReflectionTool>)
-# add_custom_command(OUTPUT DummyOutput3000.txt PRE_BUILD COMMAND $<TARGET_FILE:Siesta.ReflectionTool>)
+# add_custom_command(TARGET ReflectionTool POST_BUILD COMMAND $<TARGET_FILE:ReflectionTool>)
+# add_custom_command(OUTPUT DummyOutput3000.txt PRE_BUILD COMMAND $<TARGET_FILE:ReflectionTool>)
 
-add_custom_target(Siesta.RunReflection ALL)
-add_custom_command(TARGET Siesta.RunReflection PRE_BUILD COMMAND $<TARGET_FILE:Siesta.ReflectionTool>)
-set_target_properties(Siesta.RunReflection PROPERTIES FOLDER Siesta/Rules)
+add_custom_target(RunReflection ALL)
+add_custom_command(TARGET RunReflection PRE_BUILD COMMAND $<TARGET_FILE:ReflectionTool>)
+set_target_properties(RunReflection PROPERTIES FOLDER Siesta/Rules)

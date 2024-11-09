@@ -1,0 +1,1 @@
+#include "HAL/RenderCore/Resources/GPUBufferResource.h"

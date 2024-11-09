@@ -6,6 +6,7 @@ macro(Siesta_AddCompileOptionWithMacro _Name _DefaultValue)
 endmacro()
 
 macro(Siesta_AddMacro _Name)
+    option(${_Name} "" ON)
     add_definitions(-D${_Name})
 endmacro()
 

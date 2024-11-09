@@ -19,5 +19,7 @@ if(SIESTA_USE_D3D12)
             DirectX-Guids
             dxgi
             d3d12
-            D3D12MemoryAllocator)
+            D3D12MemoryAllocator
+            Siesta-ShaderCompilerDXC
+            Siesta-RenderD3D12)
 endif()

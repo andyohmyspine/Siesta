@@ -11,6 +11,8 @@ namespace Detail
 	const auto IPlatform_Deleter = [](IPlatform* Platform) { HALDestroyPlatform(Platform); };
 }
 
+class SRenderer;
+
 class SEngine
 {
 public:
@@ -22,6 +24,7 @@ public:
 private:
 	PUniquePtr<IPlatform, decltype(Detail::IPlatform_Deleter)> m_Platform;
 	IPlatformWindow* m_MainWindow{};
+	SRenderer* m_Renderer{};
 };
 
 extern SEngine* CreateEngine();

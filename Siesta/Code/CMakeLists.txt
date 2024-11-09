@@ -1,7 +1,7 @@
 add_subdirectory(ThirdParty)
-add_subdirectory(Core)
-add_subdirectory(Engine)
-
+add_subdirectory(Siesta-Core)
+add_subdirectory(Siesta-Backends)
+add_subdirectory(Siesta-Engine)
 if(SIESTA_BUILD_EDITOR)
-    add_subdirectory(Editor)
+    add_subdirectory(Siesta-Editor)
 endif()

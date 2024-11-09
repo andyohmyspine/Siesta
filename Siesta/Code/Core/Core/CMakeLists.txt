@@ -1,6 +1,0 @@
-Siesta_CreateSharedModule(Core)
-Siesta_AvoidReflection(Core)
-
-target_link_libraries(Core PUBLIC Taskflow spdlog dynalo DirectXMath)
-target_precompile_headers(Core PUBLIC Public/SiestaCorePCH.h)
-target_compile_definitions(Core PUBLIC _XM_NO_XMVECTOR_OVERLOADS_)

@@ -44,21 +44,20 @@ inline PSharedPtr<T> MakeShared(Args&&... InArgs)
 	return std::make_shared<T>(std::forward<Args>(InArgs)...);
 }
 
-template<typename T>
-using PUniquePtr = std::unique_ptr<T>;
+template<typename T, typename TDelete = std::default_delete<T>>
+using PUniquePtr = std::unique_ptr<T, TDelete>;
 
-template<typename T, typename ... Args>
-inline PUniquePtr<T> MakeUnique(Args&&... InArgs)
+template<typename T, typename TDeleter = std::default_delete<T>, typename ... Args>
+inline PUniquePtr<T, TDeleter> MakeUnique(Args&&... InArgs)
 {
 	return std::make_unique<T>(std::forward<Args>(InArgs)...);
 }
 
-template<typename T>
-inline PUniquePtr<T> WrapUnique(T* Obj)
+template<typename T, typename TDeleter = std::default_delete<T>>
+inline PUniquePtr<T, TDeleter> WrapUnique(T* Obj)
 {
-	return PUniquePtr<T>(Obj);
+	return PUniquePtr<T, TDeleter>(Obj);
 }
-
 
 template<typename T>
 using PWeakPtr = std::weak_ptr<T>;

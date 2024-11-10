@@ -14,8 +14,29 @@ SShaderRegistry::SShaderRegistry()
 {
 }
 
+static TString GetEntryPointName(EShaderStage::Type Stage)
+{
+	return match_enum(Stage)
+	{
+		match_case(VertexShader) return TString("MainVS");
+		match_case(PixelShader) return TString("MainPS");
+		match_case(ComputeShader) return TString("MainCS");
+	}
+	end_match;
+}
+
 SShader* SShaderRegistry::GetShader(const TString& Name, EShaderStage::Type Stage)
 {
+	// If we have no shader entry or the shader for this stage is null, compile it or throw an error
+	if (!Get().m_Shaders.contains(Name) || *Get().m_Shaders.at(Name).GetForStage(Stage) == nullptr)
+	{
+#ifdef SIESTA_USE_SHADER_COMPILER
+		*Get().m_Shaders[Name].GetForStage(Stage) = CompileShader(Name, Stage);
+#else
+		Debug::Critical("Could not find shader binary for shader '{}'.");
+#endif
+	}
+
 	return match_enum(Stage)
 	{
 		match_case(VertexShader) return Get().m_Shaders.at(Name).VS;
@@ -46,19 +67,21 @@ void SShaderRegistry::RegisterShader(const TString& Name, EShaderStage::Type Sta
 #ifdef SIESTA_USE_SHADER_COMPILER
 	#include "HAL/RenderCore/ShaderCompiler.h"
 
-SShader* SShaderRegistry::CompileShader(const TString& Path, const TString& EntryPoint, EShaderStage::Type Stage)
+SShader* SShaderRegistry::CompileShader(const TString& Name, EShaderStage::Type Stage)
 {
-	Debug::Trace("Compiling shader '{}' ['{}']", Path, EntryPoint);
+	const TString ShaderPath = SHADER_PATH(Name);
+	const TString EntryPoint = GetEntryPointName(Stage);
+	Debug::Trace("Compiling shader '{}' ['{}']", Name, EntryPoint);
 
 	auto& This = Get();
-	SShader* OutShader = new SShader(Path, EntryPoint, Stage);
+	SShader* OutShader = new SShader(Name, EntryPoint, Stage);
 
 	SShaderCompilerEnvironmentConfiguration Env;
-	DCompiledData CompiledData = This.m_ShaderCompiler->CompileShader(Env, Path, EntryPoint, Stage);
+	DCompiledData CompiledData = This.m_ShaderCompiler->CompileShader(Env, ShaderPath, EntryPoint, Stage);
 	{
 		PUniquePtr<SCPUBlob> Blob = WrapUnique(AllocateCPUBlob(CompiledData.Size, CompiledData.Binary));
 		Detail::SetShaderByteCode(OutShader, std::move(Blob));
-		RegisterShader(Path, Stage, OutShader);
+		RegisterShader(Name, Stage, OutShader);
 	}
 	This.m_ShaderCompiler->ClearCompiledData(&CompiledData);
 	return OutShader;

@@ -5,6 +5,8 @@
 #include "HAL/RenderCore/WindowRenderState.h"
 #include "HAL/RenderCore/BufferUtils.h"
 
+#include "HAL/RenderCore/SiestaShaderRegistry.h"
+
 SSceneRenderer::SSceneRenderer()
 {
 	DGPUBufferDesc BufferDesc{
@@ -18,6 +20,9 @@ SSceneRenderer::SSceneRenderer()
 	char data[1024] = {};
 	m_TestBuffer = BufferUtils::CreateBufferResource(BufferDesc);
 	m_TestBuffer->WriteData(data, 1024, 0);
+
+	SShaderRegistry::GetShader("Test/Test.hlsl", EShaderStage::VertexShader);
+	SShaderRegistry::GetShader("Test/Test.hlsl", EShaderStage::PixelShader);
 }
 
 SSceneRenderer::~SSceneRenderer()

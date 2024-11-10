@@ -30,3 +30,5 @@ class SFileHelpers
 public:
 	static TString ReadFileToString(const TString& Path);
 };
+
+#define SHADER_PATH(Path) SPaths::MakeShaderPath(Path)

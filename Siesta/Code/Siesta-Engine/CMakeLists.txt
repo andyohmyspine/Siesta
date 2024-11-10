@@ -9,7 +9,6 @@ endif()
 if(WIN32)
     target_link_libraries(Siesta-Engine PRIVATE DXC)
     target_compile_definitions(Siesta-Engine PRIVATE SIESTA_SHADER_COMPILER_DXC)
-    Siesta_CopyDXCBinaries(Siesta-Engine)
 endif()
 
 if(SIESTA_USE_D3D12)
@@ -23,3 +22,7 @@ if(SIESTA_USE_D3D12)
             Siesta-ShaderCompilerDXC
             Siesta-RenderD3D12)
 endif()
+
+macro(Siesta_CopyRequiredBinaries _ModuleName)
+    Siesta_CopyDXCBinaries(${_ModuleName})
+endmacro()

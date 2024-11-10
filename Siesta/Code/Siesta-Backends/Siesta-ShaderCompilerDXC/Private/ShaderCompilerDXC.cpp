@@ -59,7 +59,7 @@ DCompiledData SDXCShaderCompiler::CompileShader(const SShaderCompilerEnvironment
 
 	Arguments.push_back(L"-Qstrip_debug");
 #endif
-	Arguments.push_back(L"-QStrip_reflect");
+	Arguments.push_back(L"-Qstrip_reflect");
 
 	DxcBuffer SourceBuffer = 
 	{

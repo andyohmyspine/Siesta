@@ -23,7 +23,6 @@ SSceneRenderer::SSceneRenderer()
 
 	m_TestVS = SShaderRegistry::GetShader("Test/Test.hlsl", EShaderStage::VertexShader);
 	m_TestPS = SShaderRegistry::GetShader("Test/Test.hlsl", EShaderStage::PixelShader);
-	SIESTA_BREAK();
 }
 
 SSceneRenderer::~SSceneRenderer()

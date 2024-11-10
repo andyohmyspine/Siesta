@@ -79,7 +79,9 @@ SShader* SShaderRegistry::CompileShader(const TString& Name, EShaderStage::Type 
 	SShaderCompilerEnvironmentConfiguration Env;
 	DCompiledData CompiledData = This.m_ShaderCompiler->CompileShader(Env, ShaderPath, EntryPoint, Stage);
 	{
-		PUniquePtr<SCPUBlob> Blob = WrapUnique(AllocateCPUBlob(CompiledData.Size, CompiledData.Binary));
+		PUniquePtr<SCPUBlob> Blob = WrapUnique(CompiledData.Binary);
+		Blob->AddRef();
+
 		Detail::SetShaderByteCode(OutShader, std::move(Blob));
 		RegisterShader(Name, Stage, OutShader);
 	}

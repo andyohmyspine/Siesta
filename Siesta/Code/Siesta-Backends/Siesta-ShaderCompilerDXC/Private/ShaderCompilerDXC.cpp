@@ -82,16 +82,17 @@ DCompiledData SDXCShaderCompiler::CompileShader(const SShaderCompilerEnvironment
 	ComPtr<IDxcBlob> CompileBinary;
 	ThrowIfFailed(CompileResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&CompileBinary), nullptr));
 
-	return {};
+	DCompiledData OutData = {};
+	OutData.Binary = AllocateCPUBlob(CompileBinary->GetBufferSize(), CompileBinary->GetBufferPointer());
+	return OutData;
 }
 
 void SDXCShaderCompiler::ClearCompiledData(DCompiledData* Data)
 {
 	if (Data->Binary)
 	{
-		delete[] reinterpret_cast<const uint8*>(Data->Binary);
+		Data->Binary->Release();
 		Data->Hash = 0;
-		Data->Size = 0;
 
 		if (Data->Reflection)
 		{

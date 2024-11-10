@@ -3,6 +3,8 @@
 #include "Renderer/SiestaRenderer.h"
 #include "HAL/RenderCore/Resources/GPUBufferResource.h"
 
+class SShader;
+
 class SSceneRenderer : public SRenderer
 {
 public:
@@ -13,4 +15,7 @@ public:
 
 private:
 	SGPUBufferResource* m_TestBuffer;
+
+	SShader* m_TestVS;
+	SShader* m_TestPS;
 };

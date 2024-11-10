@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SiestaCore.h"
+#include "CPUBlob.h"
 #include "HAL/RenderCore/Interfaces/SiestaShader.h"
 
 struct DShaderReflectionData
@@ -9,14 +10,13 @@ struct DShaderReflectionData
 
 struct DCompiledData
 {
-	void* Binary;
+	SCPUBlob* Binary;
 	DShaderReflectionData* Reflection;
-	uint64 Size;
 	uint64 Hash;
 
 	inline bool IsValid() const 
 	{
-		return Binary != nullptr && Size > 0;
+		return Binary != nullptr && Binary->GetBufferSize() > 0;
 	}
 };
 

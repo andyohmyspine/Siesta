@@ -1,6 +1,6 @@
 #include "HAL/RenderCore/WindowRenderState.h"
-#include "HAL/RenderCore/Interfaces/SiestaRenderAPI.h"
-#include "HAL/RenderCore/Interfaces/SiestaRenderDevice.h"
+#include "HAL/RenderCore/Interfaces/RenderAPI.h"
+#include "HAL/RenderCore/Interfaces/RenderDevice.h"
 
 SWindowRenderState::SWindowRenderState(SRenderAPI* RenderAPI, const IPlatformWindow* Window)
 	: m_RenderAPI(RenderAPI)

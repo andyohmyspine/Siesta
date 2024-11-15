@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SiestaTypes.h"
-#include "SiestaFilesystem.h"
-#include "SiestaAsync.h"
-#include "SiestaLogging.h"
+#include "Types.h"
+#include "FileSystem.h"
+#include "Async.h"
+#include "Logging.h"

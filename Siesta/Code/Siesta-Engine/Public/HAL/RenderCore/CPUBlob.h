@@ -1,7 +1,6 @@
 #pragma once
 
-#include "SiestaCore.h"
-#include "SiestaIntrusivePtr.h"
+#include "Core.h"
 
 class SCPUBlob : public SIntrusiveRefCounted
 {

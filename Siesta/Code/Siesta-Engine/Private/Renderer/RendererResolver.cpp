@@ -1,6 +1,6 @@
 #include "RendererResolver.h"
 
-#include "SiestaSceneRenderer.h"
+#include "SceneRenderer.h"
 
 SRenderer* SRendererResolver::GetOrCreate(ERendererType Type)
 {

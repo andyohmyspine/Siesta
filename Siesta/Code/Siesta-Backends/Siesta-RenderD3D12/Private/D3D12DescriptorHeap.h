@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SiestaCore.h"
+#include "Core.h"
 #include "D3D12Common.h"
 
 /**

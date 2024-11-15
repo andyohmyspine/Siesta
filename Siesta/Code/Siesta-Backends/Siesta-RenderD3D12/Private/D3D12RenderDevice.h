@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HAL/RenderCore/Interfaces/SiestaRenderDevice.h"
+#include "HAL/RenderCore/Interfaces/RenderDevice.h"
 
 #include "D3D12Common.h"
 #include "D3D12ResourceAllocator.h"

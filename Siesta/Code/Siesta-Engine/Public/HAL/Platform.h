@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SiestaCore.h"
+#include "Core.h"
 
 class IPlatformWindow
 {

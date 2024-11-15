@@ -11,7 +11,7 @@ SD3D12SwapChain::SD3D12SwapChain(SD3D12RenderDevice* Parent, const IPlatformWind
 	DXGI_SWAP_CHAIN_DESC1 Desc{};
 	Desc.Width = 0;
 	Desc.Height = 0;
-	Desc.Format = (DXGI_FORMAT)m_PixelFormat;
+	Desc.Format = GetDxgiFormat(m_PixelFormat);
 	Desc.Stereo = FALSE;
 	Desc.SampleDesc = { 1, 0 };
 	Desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_BACK_BUFFER;
@@ -114,7 +114,7 @@ void SD3D12SwapChain::Resize()
 		Resource.Reset();
 	}
 
-	ThrowIfFailed(m_SwapChain->ResizeBuffers(SIESTA_SWAP_CHAIN_BUFFER_COUNT, (UINT)Width, (UINT)Height, (DXGI_FORMAT)m_PixelFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING));
+	ThrowIfFailed(m_SwapChain->ResizeBuffers(SIESTA_SWAP_CHAIN_BUFFER_COUNT, (UINT)Width, (UINT)Height, GetDxgiFormat(m_PixelFormat), DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING));
 
 	AllocateDescriptors();
 	m_WaitingForResize = false;

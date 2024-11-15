@@ -6,6 +6,8 @@ uint64 GCurrentFrameIndex = 0;
 
 SD3D12RenderAPI::SD3D12RenderAPI()
 {
+	D3D12InitializePixelFormatMapping();
+
 	m_RenderDevice = new SD3D12RenderDevice();
 	m_RTVDescriptorHeap = MakeShared<SD3D12DescriptorPool>(this, EDescriptorHeapType::RenderTarget, 1024, false);
 }

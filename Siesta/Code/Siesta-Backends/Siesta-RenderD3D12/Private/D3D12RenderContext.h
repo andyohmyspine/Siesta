@@ -1,7 +1,7 @@
 #pragma once
 
 #include "D3D12Common.h"
-#include "HAL/RenderCore/Interfaces/SiestaRenderContext.h"
+#include "HAL/RenderCore/Interfaces/RenderContext.h"
 
 class SD3D12RenderAPI;
 class SGPUBufferResource;

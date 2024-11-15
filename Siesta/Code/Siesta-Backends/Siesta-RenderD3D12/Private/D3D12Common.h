@@ -1,6 +1,7 @@
 #pragma once
 
-#include "SiestaCore.h"
+#include "Core.h"
+#include "HAL/RenderCore/RenderTypes.h"
 
 #include <directx/d3d12.h>
 #include <directx/d3dx12.h>
@@ -47,3 +48,11 @@ inline void ThrowIfFailed(HRESULT Result)
 
 template<typename T>
 using PCom = Microsoft::WRL::ComPtr<T>;
+
+extern PArray<DXGI_FORMAT, PF_MAX> GDxgiFormatMapping;
+inline DXGI_FORMAT GetDxgiFormat(EPixelFormat Format) noexcept
+{
+	return GDxgiFormatMapping[Format];
+}
+
+void D3D12InitializePixelFormatMapping();

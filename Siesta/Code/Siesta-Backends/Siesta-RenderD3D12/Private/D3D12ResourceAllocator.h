@@ -10,7 +10,6 @@ struct DD3D12ResourceAllocation
 {
 	PCom<ID3D12Resource> Resource;
 	PCom<D3D12MA::Allocation> Allocation;
-
 };
 
 class SD3D12ResourceAllocator

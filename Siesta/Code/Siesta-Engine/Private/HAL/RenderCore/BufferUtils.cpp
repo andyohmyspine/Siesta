@@ -1,7 +1,7 @@
 #include "HAL/RenderCore/BufferUtils.h"
 
-#include "HAL/RenderCore/Interfaces/SiestaRenderAPI.h"
-#include "HAL/RenderCore/Interfaces/SiestaRenderDevice.h"
+#include "HAL/RenderCore/Interfaces/RenderAPI.h"
+#include "HAL/RenderCore/Interfaces/RenderDevice.h"
 
 SGPUBufferResource* BufferUtils::CreateBufferResource(const DGPUBufferDesc& Desc)
 {

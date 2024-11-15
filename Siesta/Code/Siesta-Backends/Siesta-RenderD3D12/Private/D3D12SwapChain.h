@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HAL/RenderCore/Interfaces/SiestaSwapChain.h"
+#include "HAL/RenderCore/Interfaces/SwapChain.h"
 
 #include "D3D12Common.h"
 #include "D3D12DescriptorHeap.h"
@@ -32,7 +32,7 @@ private:
 	const IPlatformWindow* m_AssociatedWindow;
 
 	uint32 m_CurrentBackBufferIndex = 0;
-	EPixelFormat m_PixelFormat = PF_R8G8B8A8_UNORM;
+	EPixelFormat m_PixelFormat = PF_RGBA8_UNORM;
 
 	PArray<PCom<ID3D12Resource>, SIESTA_SWAP_CHAIN_BUFFER_COUNT> m_SwapChainBuffers;
 	DDescriptorHeapAllocation m_Descriptors{};

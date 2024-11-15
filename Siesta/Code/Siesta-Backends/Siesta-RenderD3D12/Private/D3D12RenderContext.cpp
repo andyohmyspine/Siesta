@@ -6,7 +6,7 @@
 #include "D3D12SwapChain.h"
 #include "HAL/Platform.h"
 
-#include "HAL/RenderCore/Interfaces/SiestaRenderAPI.h"
+#include "HAL/RenderCore/Interfaces/RenderAPI.h"
 #include "HAL/RenderCore/WindowRenderState.h"
 
 SD3D12RenderContext::SD3D12RenderContext(SD3D12RenderAPI* RenderAPI)

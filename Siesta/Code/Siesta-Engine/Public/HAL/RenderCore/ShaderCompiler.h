@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SiestaCore.h"
+#include "Core.h"
 #include "CPUBlob.h"
-#include "HAL/RenderCore/Interfaces/SiestaShader.h"
+#include "HAL/RenderCore/Interfaces/Shader.h"
 
 struct DShaderReflectionData
 {

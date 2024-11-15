@@ -1,7 +1,7 @@
 #pragma once
 
-#include "SiestaCore.h"
-#include "Interfaces/SiestaSwapChain.h"
+#include "Core.h"
+#include "Interfaces/SwapChain.h"
 
 class IPlatformWindow;
 class SRenderAPI;
